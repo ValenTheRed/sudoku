@@ -46,6 +46,12 @@ var DefaultColorScheme = struct {
 	},
 }
 
+// The theme and accent color to be used within the application.
+var (
+	Theme = DefaultColorScheme.Dark
+	Accent = Theme["purple"]
+)
+
 // viewDefaultColorScheme is used to display the colorscheme as it would
 // be used in the application for testing purposes. It returns a
 // Primitive to be set as the root of the application.
