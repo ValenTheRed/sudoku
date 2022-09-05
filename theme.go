@@ -1,5 +1,12 @@
 package main
 
+import (
+	"fmt"
+
+	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
+)
+
 var DefaultColorScheme = struct {
 	Dark, Light map[string]string
 }{
@@ -37,4 +44,47 @@ var DefaultColorScheme = struct {
 		"yellow": "#fbd900",
 		"green":  "#0df50b",
 	},
+}
+
+// viewDefaultColorScheme is used to display the colorscheme as it would
+// be used in the application for testing purposes. It returns a
+// Primitive to be set as the root of the application.
+func viewDefaultColorScheme(theme map[string]string) tview.Primitive {
+	newPrimitive := func(bg string) tview.Primitive {
+		tv := tview.NewTextView().
+			SetTextAlign(tview.AlignCenter).
+			SetDynamicColors(true).
+			SetText(fmt.Sprintf(
+				"[:%s:]  \n[%s::]1 2 3 4 5 6 7 8 9\n[%s:-:]1 2 3 4 5 6 7 8 9",
+				bg,
+				theme["white"],
+				theme["foreground"],
+			))
+		tv.SetBackgroundColor(tcell.GetColor(theme["background"]))
+		return tv
+	}
+
+	helpPrim := tview.NewTextView().
+		SetDynamicColors(true).
+		SetTextAlign(tview.AlignCenter).SetText(
+		fmt.Sprintf("[%s]q[%s] quit • [%s]? [%s]help",
+			theme["helpKey"],
+			theme["helpDesc"],
+			theme["helpKey"],
+			theme["helpDesc"]),
+	)
+	helpPrim.SetBackgroundColor(tcell.GetColor(theme["background"]))
+
+	grid := tview.NewGrid().
+		SetRows(4, 4, 4, 4, 4, 4, 4, 4, 4).
+		AddItem(newPrimitive(theme["cyan"]), 0, 0, 1, 1, 0, 0, false).
+		AddItem(newPrimitive(theme["purple"]), 1, 0, 1, 1, 0, 0, false).
+		AddItem(newPrimitive(theme["pink"]), 2, 0, 1, 1, 0, 0, false).
+		AddItem(newPrimitive(theme["red"]), 3, 0, 1, 1, 0, 0, false).
+		AddItem(newPrimitive(theme["orange"]), 4, 0, 1, 1, 0, 0, false).
+		AddItem(newPrimitive(theme["yellow"]), 5, 0, 1, 1, 0, 0, false).
+		AddItem(newPrimitive(theme["green"]), 6, 0, 1, 1, 0, 0, false).
+		AddItem(helpPrim, 7, 0, 1, 1, 0, 0, false)
+
+	return grid
 }
