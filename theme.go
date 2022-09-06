@@ -66,6 +66,11 @@ var (
 	Accent = Theme.purple
 )
 
+func init() {
+	tview.Styles.PrimaryTextColor = Theme.foreground
+	tview.Styles.PrimitiveBackgroundColor = Theme.background
+}
+
 // viewDefaultColorScheme is used to display the colorscheme as it would
 // be used in the application for testing purposes. It returns a
 // Primitive to be set as the root of the application.
