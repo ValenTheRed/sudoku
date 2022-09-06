@@ -8,55 +8,55 @@ import (
 )
 
 type ColorScheme struct {
-	background, foreground string
-	helpKey, helpDesc      string
+	background, foreground tcell.Color
+	helpKey, helpDesc      tcell.Color
 
-	black, white string
+	black, white tcell.Color
 	// Accents
-	cyan   string
-	purple string
-	pink   string
-	red    string
-	orange string
-	yellow string
-	green  string
+	cyan   tcell.Color
+	purple tcell.Color
+	pink   tcell.Color
+	red    tcell.Color
+	orange tcell.Color
+	yellow tcell.Color
+	green  tcell.Color
 }
 
 // Default colorschemes.
 var (
 	DarkColorScheme = ColorScheme{
-		background: "#121014",
-		foreground: "#dbdbdb",
-		helpKey:    "#626262",
-		helpDesc:   "#4a4a4a",
+		background: tcell.GetColor("#121014"),
+		foreground: tcell.GetColor("#dbdbdb"),
+		helpKey:    tcell.GetColor("#626262"),
+		helpDesc:   tcell.GetColor("#4a4a4a"),
 
-		black: "#000000",
-		white: "#ffffff",
+		black: tcell.GetColor("#000000"),
+		white: tcell.GetColor("#ffffff"),
 		// Accents
-		cyan:   "#03bcfc",
-		purple: "#a229f9",
-		pink:   "#eb17ff",
-		red:    "#ff222f",
-		orange: "#ff742b",
-		yellow: "#fbd900",
-		green:  "#b6e78d",
+		cyan:   tcell.GetColor("#03bcfc"),
+		purple: tcell.GetColor("#a229f9"),
+		pink:   tcell.GetColor("#eb17ff"),
+		red:    tcell.GetColor("#ff222f"),
+		orange: tcell.GetColor("#ff742b"),
+		yellow: tcell.GetColor("#fbd900"),
+		green:  tcell.GetColor("#b6e78d"),
 	}
 	LightColorScheme = ColorScheme{
-		background: "#eeeeee",
-		foreground: "#000033",
-		helpKey:    "#626262",
-		helpDesc:   "#4a4a4a",
+		background: tcell.GetColor("#eeeeee"),
+		foreground: tcell.GetColor("#000033"),
+		helpKey:    tcell.GetColor("#626262"),
+		helpDesc:   tcell.GetColor("#4a4a4a"),
 
-		black: "#000000",
-		white: "#ffffff",
+		black: tcell.GetColor("#000000"),
+		white: tcell.GetColor("#ffffff"),
 		// Accents
-		cyan:   "#03bcfc",
-		purple: "#a229f9",
-		pink:   "#f520f6",
-		red:    "#ff222f",
-		orange: "#ff742b",
-		yellow: "#fbd900",
-		green:  "#0df50b",
+		cyan:   tcell.GetColor("#03bcfc"),
+		purple: tcell.GetColor("#a229f9"),
+		pink:   tcell.GetColor("#f520f6"),
+		red:    tcell.GetColor("#ff222f"),
+		orange: tcell.GetColor("#ff742b"),
+		yellow: tcell.GetColor("#fbd900"),
+		green:  tcell.GetColor("#0df50b"),
 	}
 )
 
@@ -70,30 +70,30 @@ var (
 // be used in the application for testing purposes. It returns a
 // Primitive to be set as the root of the application.
 func viewDefaultColorScheme(theme ColorScheme) tview.Primitive {
-	newPrimitive := func(bg string) tview.Primitive {
+	newPrimitive := func(bg tcell.Color) tview.Primitive {
 		tv := tview.NewTextView().
 			SetTextAlign(tview.AlignCenter).
 			SetDynamicColors(true).
 			SetText(fmt.Sprintf(
-				"[:%s:]  \n[%s::]1 2 3 4 5 6 7 8 9\n[%s:-:]1 2 3 4 5 6 7 8 9",
-				bg,
-				theme.white,
-				theme.foreground,
+				"[:#%06x:]  \n[#%06x::]1 2 3 4 5 6 7 8 9\n[#%06x:-:]1 2 3 4 5 6 7 8 9",
+				bg.Hex(),
+				theme.white.Hex(),
+				theme.foreground.Hex(),
 			))
-		tv.SetBackgroundColor(tcell.GetColor(theme.background))
+		tv.SetBackgroundColor(theme.background)
 		return tv
 	}
 
 	helpPrim := tview.NewTextView().
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignCenter).SetText(
-		fmt.Sprintf("[%s]q[%s] quit • [%s]? [%s]help",
-			theme.helpKey,
-			theme.helpDesc,
-			theme.helpKey,
-			theme.helpDesc),
+		fmt.Sprintf("[#%06x]q[#%06x] quit • [#%06x]? [#%06x]help",
+			theme.helpKey.Hex(),
+			theme.helpDesc.Hex(),
+			theme.helpKey.Hex(),
+			theme.helpDesc.Hex()),
 	)
-	helpPrim.SetBackgroundColor(tcell.GetColor(theme.background))
+	helpPrim.SetBackgroundColor(theme.background)
 
 	grid := tview.NewGrid().
 		SetRows(4, 4, 4, 4, 4, 4, 4, 4, 4).
