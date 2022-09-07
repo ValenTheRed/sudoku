@@ -38,14 +38,14 @@ var (
 		pink:   tcell.GetColor("#eb17ff"),
 		red:    tcell.GetColor("#ff222f"),
 		orange: tcell.GetColor("#ff742b"),
-		yellow: tcell.GetColor("#fbd900"),
-		green:  tcell.GetColor("#b6e78d"),
+		yellow: tcell.GetColor("#d4b953"),
+		green:  tcell.GetColor("#319253"),
 	}
 	LightColorScheme = ColorScheme{
 		background: tcell.GetColor("#eeeeee"),
 		foreground: tcell.GetColor("#000033"),
-		helpKey:    tcell.GetColor("#626262"),
-		helpDesc:   tcell.GetColor("#4a4a4a"),
+		helpKey:    tcell.GetColor("#aaa597"),
+		helpDesc:    tcell.GetColor("#626262"),
 
 		black: tcell.GetColor("#000000"),
 		white: tcell.GetColor("#ffffff"),
@@ -55,8 +55,8 @@ var (
 		pink:   tcell.GetColor("#f520f6"),
 		red:    tcell.GetColor("#ff222f"),
 		orange: tcell.GetColor("#ff742b"),
-		yellow: tcell.GetColor("#fbd900"),
-		green:  tcell.GetColor("#0df50b"),
+		yellow: tcell.GetColor("#e2c559"),
+		green:  tcell.GetColor("#43c571"),
 	}
 )
 
