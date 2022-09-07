@@ -127,6 +127,11 @@ func (g *SudokuGrid) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 	})
 }
 
+const (
+	SudokuGridRowHeight   = 2
+	SudokuGridColumnWidth = 4
+)
+
 // Draw draws the sudoku grid onto the screen.
 func (g *SudokuGrid) Draw(screen tcell.Screen) {
 	const (
@@ -160,33 +165,33 @@ func (g *SudokuGrid) Draw(screen tcell.Screen) {
 
 	// One row for the numbers, second row for the borders, and we won't
 	// draw anything after the last number row.
-	for y := 0; y < (9*2)-1; y++ {
+	for y := 0; y < (9*SudokuGridRowHeight)-1; y++ {
 		switch {
 		// border between subgrid row
-		case y == (3*2)-1 || y == (6*2)-1:
-			for x := 0; x < (9*4)-1; x++ {
+		case y == (3*SudokuGridRowHeight)-1 || y == (6*SudokuGridRowHeight)-1:
+			for x := 0; x < (9*SudokuGridColumnWidth)-1; x++ {
 				screen.SetContent(X+x, Y+y, hBorderHeavy, nil, heavyBorderStyle)
 			}
-			screen.SetContent(X+(4*3)-1, Y+y, crossBorder, nil, heavyBorderStyle)
-			screen.SetContent(X+(4*6)-1, Y+y, crossBorder, nil, heavyBorderStyle)
+			screen.SetContent(X+(SudokuGridColumnWidth*3)-1, Y+y, crossBorder, nil, heavyBorderStyle)
+			screen.SetContent(X+(SudokuGridColumnWidth*6)-1, Y+y, crossBorder, nil, heavyBorderStyle)
 		// border inside subgrid row
-		case y%2 != 0:
+		case y%SudokuGridRowHeight != 0:
 			runes := []rune{hBorderRt, hBorder, hBorderLt, ' '}
-			for x := 0; x < (9*4)-1; x++ {
+			for x := 0; x < (9*SudokuGridColumnWidth)-1; x++ {
 				screen.SetContent(X+x, Y+y, runes[x%len(runes)], nil, lightBorderStyle)
 			}
-			screen.SetContent(X+(4*3)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
-			screen.SetContent(X+(4*6)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
+			screen.SetContent(X+(SudokuGridColumnWidth*3)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
+			screen.SetContent(X+(SudokuGridColumnWidth*6)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
 		// number row
 		default:
-			for x := 0; x < (9*4)-1; x++ {
-				if x%4 == 3 {
+			for x := 0; x < (9*SudokuGridColumnWidth)-1; x++ {
+				if x%SudokuGridColumnWidth == 3 {
 					screen.SetContent(X+x, Y+y, vBorder, nil, lightBorderStyle)
 					continue
 				}
-				r, c := y/2, x/4
+				r, c := y/SudokuGridRowHeight, x/SudokuGridColumnWidth
 				cell := g.GetCell(r, c)
-				if x%4 == 0 || x%4 == 2 {
+				if x%SudokuGridColumnWidth == 0 || x%SudokuGridColumnWidth == 2 {
 					if cell.Readonly() {
 						cell = NewReadonlySudokuCell(0)
 					} else {
@@ -203,8 +208,8 @@ func (g *SudokuGrid) Draw(screen tcell.Screen) {
 					}, x, y)
 				}
 			}
-			screen.SetContent(X+(4*3)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
-			screen.SetContent(X+(4*6)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
+			screen.SetContent(X+(SudokuGridColumnWidth*3)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
+			screen.SetContent(X+(SudokuGridColumnWidth*6)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
 		}
 	}
 }
