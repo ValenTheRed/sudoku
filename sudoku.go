@@ -47,6 +47,10 @@ func (c *SudokuCell) Rune() rune {
 	return rune(c.value)
 }
 
+func (c *SudokuCell) IsEmpty() bool {
+	return c.value == ' '
+}
+
 type SudokuGrid struct {
 	*tview.Box
 	selectedRow, selectedColumn int
