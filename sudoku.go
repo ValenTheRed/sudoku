@@ -11,25 +11,24 @@ type SudokuCell struct {
 }
 
 // NewSudokuCell returns a new, modifiable SudokuCell.
-func NewSudokuCell(val byte) *SudokuCell {
-	return &SudokuCell{
-		value: val,
-	}
+func NewSudokuCell(digit int) *SudokuCell {
+	return (&SudokuCell{}).SetValue(digit)
 }
 
 // NewSudokuCell returns a new, readonly SudokuCell.
-func NewReadonlySudokuCell(val byte) *SudokuCell {
-	return NewSudokuCell(val).SetReadonly(true)
+func NewReadonlySudokuCell(digit int) *SudokuCell {
+	return NewSudokuCell(digit).SetReadonly(true)
 }
 
 func (c *SudokuCell) Value() byte {
 	return c.value
 }
 
-func (c *SudokuCell) SetValue(v byte) *SudokuCell {
-	c.value = v
-	if v == '0' {
+func (c *SudokuCell) SetValue(digit int) *SudokuCell {
+	if digit == 0 {
 		c.value = ' '
+	} else {
+		c.value = byte(digit) + '0'
 	}
 	return c
 }
@@ -62,7 +61,7 @@ func NewSudokuGrid() *SudokuGrid {
 	var contents [81]*SudokuCell
 	for r := 0; r < 9; r++ {
 		for c := 0; c < 9; c++ {
-			contents[9*r+c] = NewSudokuCell('0')
+			contents[9*r+c] = NewSudokuCell(0)
 		}
 	}
 	return &SudokuGrid{
@@ -116,7 +115,7 @@ func (g *SudokuGrid) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				cell := g.GetCell(g.selectedRow, g.selectedColumn)
 				if !cell.Readonly() {
-					cell.SetValue(byte(r))
+					cell.SetValue(int((r-'0')))
 				}
 			}
 		case tcell.KeyDown:
