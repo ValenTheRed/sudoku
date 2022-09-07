@@ -43,7 +43,7 @@ func (c *SudokuCell) SetReadonly(v bool) *SudokuCell {
 	return c
 }
 
-func (c SudokuCell) Rune() rune {
+func (c *SudokuCell) Rune() rune {
 	return rune(c.value)
 }
 
