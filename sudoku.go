@@ -126,3 +126,85 @@ func (g *SudokuGrid) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 		}
 	})
 }
+
+// Draw draws the sudoku grid onto the screen.
+func (g *SudokuGrid) Draw(screen tcell.Screen) {
+	const (
+		hBorderRt    = tview.BoxDrawingsLightRight
+		hBorder      = tview.BoxDrawingsLightHorizontal
+		hBorderLt    = tview.BoxDrawingsLightLeft
+		hBorderHeavy = tview.BoxDrawingsHeavyHorizontal
+
+		vBorder      = tview.BoxDrawingsLightVertical
+		vBorderHeavy = tview.BoxDrawingsHeavyVertical
+
+		crossBorder = tview.BoxDrawingsHeavyVerticalAndHorizontal
+	)
+
+	g.Box.DrawForSubclass(screen, g)
+	X, Y, _, _ := g.Box.GetInnerRect()
+
+	heavyBorderStyle := tcell.StyleDefault.Foreground(Accent).Background(Theme.background)
+	lightBorderStyle := tcell.StyleDefault.Foreground(Theme.helpKey).Background(Theme.background)
+	cellStyle := tcell.StyleDefault.Foreground(Theme.foreground).Background(Theme.background)
+	readonlyStyle := tcell.StyleDefault.Foreground(Theme.foreground).Background(Accent)
+
+	// helper function to draw i-th cell at row y and column x.
+	drawCell := func(c *SudokuCell, style func(tcell.Style) tcell.Style, x, y int) {
+		if c.Readonly() {
+			screen.SetContent(X+x, Y+y, c.Rune(), nil, style(readonlyStyle))
+		} else {
+			screen.SetContent(X+x, Y+y, c.Rune(), nil, style(cellStyle))
+		}
+	}
+
+	// One row for the numbers, second row for the borders, and we won't
+	// draw anything after the last number row.
+	for y := 0; y < (9*2)-1; y++ {
+		switch {
+		// border between subgrid row
+		case y == (3*2)-1 || y == (6*2)-1:
+			for x := 0; x < (9*4)-1; x++ {
+				screen.SetContent(X+x, Y+y, hBorderHeavy, nil, heavyBorderStyle)
+			}
+			screen.SetContent(X+(4*3)-1, Y+y, crossBorder, nil, heavyBorderStyle)
+			screen.SetContent(X+(4*6)-1, Y+y, crossBorder, nil, heavyBorderStyle)
+		// border inside subgrid row
+		case y%2 != 0:
+			runes := []rune{hBorderRt, hBorder, hBorderLt, ' '}
+			for x := 0; x < (9*4)-1; x++ {
+				screen.SetContent(X+x, Y+y, runes[x%len(runes)], nil, lightBorderStyle)
+			}
+			screen.SetContent(X+(4*3)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
+			screen.SetContent(X+(4*6)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
+		// number row
+		default:
+			for x := 0; x < (9*4)-1; x++ {
+				if x%4 == 3 {
+					screen.SetContent(X+x, Y+y, vBorder, nil, lightBorderStyle)
+					continue
+				}
+				r, c := y/2, x/4
+				cell := g.GetCell(r, c)
+				if x%4 == 0 || x%4 == 2 {
+					if cell.Readonly() {
+						cell = NewReadonlySudokuCell(0)
+					} else {
+						cell = NewSudokuCell(0)
+					}
+				}
+				if g.selectedRow == r && g.selectedColumn == c {
+					drawCell(cell, func(s tcell.Style) tcell.Style {
+						return s.Reverse(true)
+					}, x, y)
+				} else {
+					drawCell(cell, func(s tcell.Style) tcell.Style {
+						return s
+					}, x, y)
+				}
+			}
+			screen.SetContent(X+(4*3)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
+			screen.SetContent(X+(4*6)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
+		}
+	}
+}
