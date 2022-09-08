@@ -115,7 +115,7 @@ func (g *SudokuGrid) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				cell := g.GetCell(g.selectedRow, g.selectedColumn)
 				if !cell.Readonly() {
-					cell.SetValue(int((r-'0')))
+					cell.SetValue(int((r - '0')))
 				}
 			}
 		case tcell.KeyDown:
@@ -131,7 +131,13 @@ func (g *SudokuGrid) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 }
 
 const (
+	// I assume that a cell in the grid is composed of the characters
+	// for its contents then one border character. So,
+	// cell length = len(cell contents + border character)
+
+	// cell vertical length = len('<number>' + '-') = 2
 	SudokuGridRowHeight   = 2
+	// cell horizontal length = len(' ' + '<number>' ' ' + '|') = 4
 	SudokuGridColumnWidth = 4
 )
 
@@ -223,10 +229,57 @@ func (g *SudokuGrid) Draw(screen tcell.Screen) {
 func (g *SudokuGrid) centerCoordinates() (X, Y int) {
 	X, Y, width, height := g.Box.GetInnerRect()
 	if width := width - (9 * SudokuGridColumnWidth) - 1; width > 0 {
-		X += width/2
+		X += width / 2
 	}
 	if height := height - (9 * SudokuGridRowHeight) - 1; height > 0 {
-		Y += height/2
+		Y += height / 2
 	}
 	return X, Y
+}
+
+func (g *SudokuGrid) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, func(tview.Primitive)) (bool, tview.Primitive) {
+	return g.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
+		x, y := event.Position()
+		if !g.InRect(x, y) {
+			return
+		}
+		// From my investigation, both, MouseLeftDown and
+		// MouseLeftClick, are sent whenever you left click.
+		// MouseLeftDown is sent first and then MouseLeftClick.
+		//
+		// The follwing switch structure has been referenced from
+		// tview.TextView.
+		switch action {
+		case tview.MouseLeftDown:
+			setFocus(g)
+			consumed = true
+		case tview.MouseLeftClick:
+			r, c := g.cellAtCoordinate(event.Position())
+			if r != -1 {
+				g.SelectCell(r, c)
+			}
+			consumed = true
+		}
+		return consumed, nil
+	})
+}
+
+// cellAtCoordinate returns the row and column of the cell enclosing
+// the point at (x, y). Returns (-1, -1) if point outside g's bounding
+// box, or point resides on a border character.
+func (g *SudokuGrid) cellAtCoordinate(x, y int) (r, c int) {
+	if !g.InRect(x, y) {
+		return -1, -1
+	}
+	X, Y := g.centerCoordinates()
+	x, y = x-X, y-Y
+	width, height := 9*SudokuGridColumnWidth-1, 9*SudokuGridRowHeight-1
+	if x < 0 || y < 0 || x > width || y > height {
+		return -1, -1
+	}
+	if y%SudokuGridRowHeight == SudokuGridRowHeight-1 ||
+		x%SudokuGridColumnWidth == SudokuGridColumnWidth-1 {
+		return -1, -1
+	}
+	return y / SudokuGridRowHeight, x / SudokuGridColumnWidth
 }
