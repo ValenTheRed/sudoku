@@ -150,15 +150,7 @@ func (g *SudokuGrid) Draw(screen tcell.Screen) {
 	)
 
 	g.Box.DrawForSubclass(screen, g)
-	X, Y, width, height := g.Box.GetInnerRect()
-
-	// Center the grid
-	if width := width - (9 * SudokuGridColumnWidth) - 1; width > 0 {
-		X += width/2
-	}
-	if height := height - (9 * SudokuGridRowHeight) - 1; height > 0 {
-		Y += height/2
-	}
+	X, Y := g.centerCoordinates()
 
 	heavyBorderStyle := tcell.StyleDefault.Foreground(Accent).Background(Theme.background)
 	lightBorderStyle := tcell.StyleDefault.Foreground(Theme.helpKey).Background(Theme.background)
@@ -223,4 +215,18 @@ func (g *SudokuGrid) Draw(screen tcell.Screen) {
 			screen.SetContent(X+(SudokuGridColumnWidth*6)-1, Y+y, vBorderHeavy, nil, heavyBorderStyle)
 		}
 	}
+}
+
+// centerCoordinates calculates and returns the (X, Y) coordinates of
+// the point within the SudokuGrid bounding box from where, if drawn,
+// the SudokuGrid looks centered.
+func (g *SudokuGrid) centerCoordinates() (X, Y int) {
+	X, Y, width, height := g.Box.GetInnerRect()
+	if width := width - (9 * SudokuGridColumnWidth) - 1; width > 0 {
+		X += width/2
+	}
+	if height := height - (9 * SudokuGridRowHeight) - 1; height > 0 {
+		Y += height/2
+	}
+	return X, Y
 }
