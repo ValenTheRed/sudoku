@@ -150,7 +150,15 @@ func (g *SudokuGrid) Draw(screen tcell.Screen) {
 	)
 
 	g.Box.DrawForSubclass(screen, g)
-	X, Y, _, _ := g.Box.GetInnerRect()
+	X, Y, width, height := g.Box.GetInnerRect()
+
+	// Center the grid
+	if width := width - (9 * SudokuGridColumnWidth) - 1; width > 0 {
+		X += width/2
+	}
+	if height := height - (9 * SudokuGridRowHeight) - 1; height > 0 {
+		Y += height/2
+	}
 
 	heavyBorderStyle := tcell.StyleDefault.Foreground(Accent).Background(Theme.background)
 	lightBorderStyle := tcell.StyleDefault.Foreground(Theme.helpKey).Background(Theme.background)
