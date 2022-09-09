@@ -86,3 +86,19 @@ func (f *SudokuFooter) Draw(screen tcell.Screen) {
 		}
 	}
 }
+
+func (f *SudokuFooter) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, func(tview.Primitive)) (bool, tview.Primitive) {
+	return f.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
+		if !f.InRect(event.Position()) {
+			return
+		}
+		// Pass mouse events along to the first child item that takes it.
+		for _, button := range f.buttons {
+			consumed, capture = button.MouseHandler()(action, event, setFocus)
+			if consumed {
+				return consumed, capture
+			}
+		}
+		return
+	})
+}
