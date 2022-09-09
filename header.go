@@ -11,16 +11,25 @@ import (
 
 type SudokuHeader struct {
 	*tview.TextView
+	frame *SudokuFrame
+
+	// Aligns the header along the left or the right margin of
+	// frame.SudokuGrid.
 	align int
 }
 
-func NewSudokuHeader() *SudokuHeader {
+// NewSudokuHeader returns a new SudokuHeader. 'frame` must be the
+// SudokuFrame inside which the header would be embedded.
+func NewSudokuHeader(frame *SudokuFrame) *SudokuHeader {
 	return &SudokuHeader{
+		frame:    frame,
 		TextView: tview.NewTextView(),
 		align:    tview.AlignLeft,
 	}
 }
 
+// SetTextAlign sets the text alignment to align. align must be one of
+// tview.AlignLeft or tview.AlignRight.
 func (h *SudokuHeader) SetTextAlign(align int) *SudokuHeader {
 	h.align = align
 	return h
@@ -31,7 +40,17 @@ func (h *SudokuHeader) SetTextAlign(align int) *SudokuHeader {
 func (h *SudokuHeader) Draw(screen tcell.Screen) {
 	h.DrawForSubclass(screen, h)
 
+	X, _ := h.frame.grid.centerCoordinates()
 	x, y, _, height := h.GetRect()
+	switch h.align {
+	case tview.AlignLeft:
+		x = X
+	case tview.AlignRight:
+		width := 9*SudokuGridColumnWidth - 1
+		x = X + width - len(h.GetText(true))
+	case tview.AlignCenter:
+		// will not be handled
+	}
 	y = y + height - 2
 
 	// first row
@@ -60,7 +79,8 @@ type Timer struct {
 	stopCh  chan struct{}
 }
 
-// NewTimer returns a new initialised Timer.
+// NewTimer returns a new initialised Timer. 'frame' must be the
+// SudokuFrame inside which, Timer would been embedded.
 //
 // NOTE: NewTimer doesn't set handler for queueing redraws via
 // SetChangedFunc(), i.e.
@@ -69,9 +89,9 @@ type Timer struct {
 //	})
 // users of NewTimer have to do that themselves. Without installing the
 // handler, Timer text would not be updated.
-func NewTimer() *Timer {
+func NewTimer(frame *SudokuFrame) *Timer {
 	t := &Timer{
-		SudokuHeader: NewSudokuHeader(),
+		SudokuHeader: NewSudokuHeader(frame).SetTextAlign(tview.AlignRight),
 		stopCh:       make(chan struct{}),
 	}
 	t.SetText(t.elapsed.String())
