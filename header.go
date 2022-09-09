@@ -34,3 +34,21 @@ func (h *SudokuHeader) Draw(screen tcell.Screen) {
 		screen.SetContent(x+i, y, '▔', nil, underlineStyle)
 	}
 }
+
+type second int
+
+func (s second) String() string {
+	hrs := s / 3600
+	min := (s / 60) % 60
+	sec := s % 60
+
+	var ret strings.Builder
+	if hrs != 0 {
+		ret.WriteString(fmt.Sprintf("%dh ", hrs))
+	}
+	if (hrs != 0 && min == 0) || min != 0 {
+		ret.WriteString(fmt.Sprintf("%dm ", min))
+	}
+	ret.WriteString(fmt.Sprintf("%ds", sec))
+	return ret.String()
+}
