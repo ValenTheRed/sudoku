@@ -11,10 +11,19 @@ import (
 
 type SudokuHeader struct {
 	*tview.TextView
+	align int
 }
 
 func NewSudokuHeader() *SudokuHeader {
-	return &SudokuHeader{tview.NewTextView()}
+	return &SudokuHeader{
+		TextView: tview.NewTextView(),
+		align:    tview.AlignLeft,
+	}
+}
+
+func (h *SudokuHeader) SetTextAlign(align int) *SudokuHeader {
+	h.align = align
+	return h
 }
 
 // Draw draws SudokuHeader left aligned and at the bottom left of the
