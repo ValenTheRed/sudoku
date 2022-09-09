@@ -67,6 +67,17 @@ func (h *SudokuHeader) Draw(screen tcell.Screen) {
 	}
 }
 
+// MouseHandler passes focus to grid.
+func (h *SudokuHeader) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, func(tview.Primitive)) (bool, tview.Primitive) {
+	return h.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
+		if h.InRect(event.Position()) {
+			setFocus(h.frame.grid)
+			consumed = true
+		}
+		return
+	})
+}
+
 // Timer counts the number of seconds it took to complete the puzzle.
 //
 // I've not included any way to check whether the Timer is running or
