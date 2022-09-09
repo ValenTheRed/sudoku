@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -45,4 +46,43 @@ func NewSudokuFooter(frame *SudokuFrame) *SudokuFooter {
 	f.buttons[9] = newBtn(cross)
 
 	return f
+}
+
+// Draw draws f horizontally centered with one cell width gap at the top.
+func (f *SudokuFooter) Draw(screen tcell.Screen) {
+	f.DrawForSubclass(screen, f)
+
+	// assumption: no borders around numbers.
+	const (
+		columns    = 5
+		rows       = 2
+		cellWidth  = 4
+		cellHeight = 2
+	)
+
+	X, _ := f.frame.grid.centerCoordinates()
+	x, y, _, _ := f.GetInnerRect()
+
+	width := columns*cellWidth - 1
+	sudokuWidth := 9*SudokuGridColumnWidth - 1
+	x = X + (sudokuWidth-width)/2
+
+	for i, button := range f.buttons {
+		if i == 5 {
+			y += cellHeight
+		}
+		// I refrenced tview.Grid.Draw() and tview.Flex.Draw() for
+		// writing this Draw() function.
+
+		// This informs the Primitive of it's position so that it
+		// can draw from there.
+		button.SetRect(x+(cellWidth*(i%columns)), y, cellWidth-1, cellHeight-1)
+		// NOTE: I don't really know why we check for focus and defer
+		// draw, but I assume tview has a good reason for doing this.
+		if button.HasFocus() {
+			defer button.Draw(screen)
+		} else {
+			button.Draw(screen)
+		}
+	}
 }
