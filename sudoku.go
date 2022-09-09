@@ -76,6 +76,11 @@ func (g *SudokuGrid) SelectCell(r, c int) *SudokuGrid {
 	return g
 }
 
+// SelectedCell row r and column c of the selected cell.
+func (g *SudokuGrid) SelectedCell() (int, int) {
+	return g.selectedRow, g.selectedColumn
+}
+
 // GetCell returns the cell at row r and column c.
 func (g *SudokuGrid) GetCell(r, c int) *SudokuCell {
 	return g.contents[9*r+c]
