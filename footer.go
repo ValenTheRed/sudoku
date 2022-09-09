@@ -33,6 +33,13 @@ func NewSudokuFooter(frame *SudokuFrame) *SudokuFooter {
 				char = '0'
 			}
 			g := f.frame.grid
+			// NOTE:
+			// I expected that after setting a different value to the
+			// cell, I would need to manually invoke some some Draw() to
+			// get the grid to update, but nope, grid updates
+			// automatically and instaneously, and I've no idea how.
+			// It updates before the timer updates, so timer's
+			// SetChangedFunc() handler can't be the reason.
 			if cell := g.GetCell(g.SelectedCell()); !cell.Readonly() {
 				cell.SetValue(int(char - '0'))
 			}
