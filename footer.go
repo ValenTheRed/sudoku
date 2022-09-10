@@ -25,7 +25,6 @@ func NewSudokuFooter(frame *SudokuFrame) *SudokuFooter {
 
 	newBtn := func(char rune) *tview.Button {
 		b := tview.NewButton(fmt.Sprintf(" %c ", char))
-		b.SetLabelColorActivated(Accent)
 		b.SetSelectedFunc(func() {
 			char := []rune(b.GetLabel())[1]
 			if char == cross {

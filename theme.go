@@ -69,7 +69,15 @@ var (
 
 func init() {
 	tview.Styles.PrimaryTextColor = Theme.foreground
+	tview.Styles.InverseTextColor = Accent
+
 	tview.Styles.PrimitiveBackgroundColor = Theme.background
+	// The contrast backgrounds don't actually contrast...
+	// tview uses these contrast colors as background colors for ui
+	// elements such as buttons, etc. So, I over-ride them with my own
+	// defaults.
+	tview.Styles.ContrastBackgroundColor = Theme.uiSurface
+	tview.Styles.MoreContrastBackgroundColor = Theme.darkerUISurface
 }
 
 // viewDefaultColorScheme is used to display the colorscheme as it would
