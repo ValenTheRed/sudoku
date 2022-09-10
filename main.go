@@ -9,10 +9,12 @@ func main() {
 	app.EnableMouse(true)
 
 	frame := NewSudokuFrame()
+	sidepane := NewSidepane()
 
 	root := tview.NewGrid().
-		SetRows(0).SetColumns(0).
-		AddItem(frame, 0, 0, 1, 1, 0, 0, true)
+		SetRows(0).SetColumns(-1, -3).
+		AddItem(sidepane, 0, 0, 1, 1, 0, 0, false).
+		AddItem(frame, 0, 1, 1, 1, 0, 0, true)
 
 	frame.timer.SetChangedFunc(func() {
 		app.Draw()
