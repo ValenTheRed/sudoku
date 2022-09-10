@@ -155,3 +155,19 @@ func (s *Sidepane) Draw(screen tcell.Screen) {
 		y += buttonHeight + buttonPadding
 	}
 }
+
+func (s *Sidepane) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, func(tview.Primitive)) (bool, tview.Primitive) {
+	return s.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
+		if !s.InRect(event.Position()) {
+			return
+		}
+		// Pass mouse events along to the first child item that takes it.
+		for _, button := range s.buttons {
+			consumed, capture = button.MouseHandler()(action, event, setFocus)
+			if consumed {
+				return consumed, capture
+			}
+		}
+		return
+	})
+}
