@@ -47,6 +47,14 @@ func (b *button) SetIconDisable(v bool) *button {
 	return b
 }
 
+// GetLabel returns the label text of b.
+func (b *button) GetLabel() string {
+	if b.iconDisable {
+		return b.text
+	}
+	return string([]rune{b.icon, ' '}) + b.text
+}
+
 type Sidepane struct {
 	*tview.Box
 }
