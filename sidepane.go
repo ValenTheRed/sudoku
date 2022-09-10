@@ -110,11 +110,32 @@ func (b *button) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, func(
 
 type Sidepane struct {
 	*tview.Box
+	buttons [6]*button
 }
 
 func NewSidepane() *Sidepane {
 	s := &Sidepane{
 		Box: tview.NewBox(),
 	}
+
+	s.SetBackgroundColor(
+		colorBlend(Accent, tview.Styles.PrimitiveBackgroundColor, 20),
+	)
+	s.SetBorderPadding(1, 1, 1, 1)
+
+	for i, item := range [6]struct {
+		icon  rune
+		label string
+	}{
+		{'', "Undo"},
+		{'', "Validate"},
+		{'', "Solve"},
+		{'', "Restart"},
+		{'', "Switch theme"},
+		{'', "Change Accent"},
+	} {
+		s.buttons[i] = newButton(item.icon, item.label)
+	}
+
 	return s
 }
