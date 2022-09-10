@@ -139,3 +139,19 @@ func NewSidepane() *Sidepane {
 
 	return s
 }
+
+func (s *Sidepane) Draw(screen tcell.Screen) {
+	s.DrawForSubclass(screen, s)
+	x, y, width, _ := s.GetInnerRect()
+
+	const (
+		buttonHeight  = 3
+		buttonPadding = 0
+	)
+
+	for _, button := range s.buttons {
+		button.SetRect(x, y, width, buttonHeight)
+		button.Draw(screen)
+		y += buttonHeight + buttonPadding
+	}
+}
