@@ -56,6 +56,13 @@ func (b *button) GetLabel() string {
 	return string([]rune{b.icon, ' '}) + b.text
 }
 
+// SetSelectedFunc sets f as the optional handler to fire when b is
+// selected.
+func (b *button) SetSelectedFunc(f func()) *button {
+	b.selected = f
+	return b
+}
+
 func (b *button) Draw(screen tcell.Screen) {
 	style := b.defaultStyle
 	if b.HasFocus() {
