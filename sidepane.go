@@ -24,6 +24,23 @@ type button struct {
 	selected func()
 }
 
+func newButton(icon rune, text string) *button {
+	return &button{
+		Box: tview.NewBox().
+			SetBorder(true).
+			SetBorderColor(Accent),
+		icon:  icon,
+		text: text,
+		defaultStyle: tcell.StyleDefault.
+			Background(colorBlend(Accent, tview.Styles.PrimitiveBackgroundColor, 20)).
+			Foreground(tview.Styles.PrimaryTextColor),
+		selectedStyle: tcell.StyleDefault.
+			Background(Accent).
+			Foreground(tview.Styles.PrimaryTextColor).
+			Attributes(tcell.AttrUnderline),
+	}
+}
+
 type Sidepane struct {
 	*tview.Box
 }
