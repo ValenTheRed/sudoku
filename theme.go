@@ -8,8 +8,8 @@ import (
 )
 
 type ColorScheme struct {
-	background, foreground tcell.Color
-	helpKey, helpDesc      tcell.Color
+	background, foreground     tcell.Color
+	uiSurface, darkerUISurface tcell.Color
 
 	black, white tcell.Color
 	// Accents
@@ -25,10 +25,10 @@ type ColorScheme struct {
 // Default colorschemes.
 var (
 	DarkColorScheme = ColorScheme{
-		background: tcell.GetColor("#121014"),
-		foreground: tcell.GetColor("#dbdbdb"),
-		helpKey:    tcell.GetColor("#626262"),
-		helpDesc:   tcell.GetColor("#4a4a4a"),
+		background:      tcell.GetColor("#121014"),
+		uiSurface:       tcell.GetColor("#363636"),
+		darkerUISurface: tcell.GetColor("#4f4f4f"),
+		foreground:      tcell.GetColor("#dbdbdb"),
 
 		black: tcell.GetColor("#000000"),
 		white: tcell.GetColor("#ffffff"),
@@ -42,10 +42,10 @@ var (
 		green:  tcell.GetColor("#319253"),
 	}
 	LightColorScheme = ColorScheme{
-		background: tcell.GetColor("#eeeeee"),
-		foreground: tcell.GetColor("#151515"),
-		helpKey:    tcell.GetColor("#aaa597"),
-		helpDesc:   tcell.GetColor("#626262"),
+		background:      tcell.GetColor("#eeeeee"),
+		foreground:      tcell.GetColor("#151515"),
+		uiSurface:       tcell.GetColor("#cccccc"),
+		darkerUISurface: tcell.GetColor("#999999"),
 
 		black: tcell.GetColor("#000000"),
 		white: tcell.GetColor("#ffffff"),
@@ -62,7 +62,8 @@ var (
 
 // The theme and accent color to be used within the application.
 var (
-	Theme  = DarkColorScheme
+	Theme = DarkColorScheme
+	// Theme  = LightColorScheme
 	Accent = Theme.purple
 )
 
@@ -92,11 +93,13 @@ func viewDefaultColorScheme(theme ColorScheme) tview.Primitive {
 	helpPrim := tview.NewTextView().
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignCenter).SetText(
-		fmt.Sprintf("[#%06x]q[#%06x] quit • [#%06x]? [#%06x]help",
-			theme.helpKey.Hex(),
-			theme.helpDesc.Hex(),
-			theme.helpKey.Hex(),
-			theme.helpDesc.Hex()),
+		fmt.Sprintf(
+			"[#%06x]q[#%06x] quit • [#%06x]? [#%06x]help",
+			theme.darkerUISurface.Hex(),
+			theme.uiSurface.Hex(),
+			theme.darkerUISurface.Hex(),
+			theme.uiSurface.Hex(),
+		),
 	)
 	helpPrim.SetBackgroundColor(theme.background)
 

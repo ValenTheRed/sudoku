@@ -164,7 +164,7 @@ func (g *SudokuGrid) Draw(screen tcell.Screen) {
 	X, Y := g.centerCoordinates()
 
 	heavyBorderStyle := tcell.StyleDefault.Foreground(Accent).Background(Theme.background)
-	lightBorderStyle := tcell.StyleDefault.Foreground(Theme.helpKey).Background(Theme.background)
+	lightBorderStyle := tcell.StyleDefault.Foreground(Theme.uiSurface).Background(Theme.background)
 	cellStyle := tcell.StyleDefault.Foreground(Theme.foreground).Background(Theme.background)
 	readonlyStyle := tcell.StyleDefault.Foreground(Theme.foreground).Background(Accent)
 
