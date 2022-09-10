@@ -88,6 +88,26 @@ func (b *button) InputHandler() func(event *tcell.EventKey, setFocus func(p tvie
 	})
 }
 
+func (b *button) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, func(tview.Primitive)) (bool, tview.Primitive) {
+	return b.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
+		if !b.InRect(event.Position()) {
+			return
+		}
+		switch action {
+		case tview.MouseLeftDown:
+			setFocus(b)
+			consumed = true
+		case tview.MouseLeftClick:
+			// Selected Func
+			if b.selected != nil {
+				b.selected()
+			}
+			consumed = true
+		}
+		return
+	})
+}
+
 type Sidepane struct {
 	*tview.Box
 }
