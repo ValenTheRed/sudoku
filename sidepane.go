@@ -41,6 +41,12 @@ func newButton(icon rune, text string) *button {
 	}
 }
 
+// SetIconDisable disables icons if v is true.
+func (b *button) SetIconDisable(v bool) *button {
+	b.iconDisable = v
+	return b
+}
+
 type Sidepane struct {
 	*tview.Box
 }
