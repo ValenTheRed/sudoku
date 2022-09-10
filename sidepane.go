@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gdamore/tcell/v2"
+	"github.com/mattn/go-runewidth"
 	"github.com/rivo/tview"
 )
 
@@ -53,6 +54,26 @@ func (b *button) GetLabel() string {
 		return b.text
 	}
 	return string([]rune{b.icon, ' '}) + b.text
+}
+
+func (b *button) Draw(screen tcell.Screen) {
+	style := b.defaultStyle
+	if b.HasFocus() {
+		style = b.selectedStyle
+	}
+	_, bg, _ := style.Decompose()
+	b.SetBackgroundColor(bg)
+	b.DrawForSubclass(screen, b)
+
+	label := b.GetLabel()
+	x, y, width, height := b.GetInnerRect()
+	y += height / 2
+	x += (width - runewidth.StringWidth(label)) / 2
+
+	for _, r := range label {
+		screen.SetContent(x, y, r, nil, style)
+		x += runewidth.RuneWidth(r)
+	}
 }
 
 type Sidepane struct {
