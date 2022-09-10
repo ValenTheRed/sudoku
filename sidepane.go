@@ -76,6 +76,18 @@ func (b *button) Draw(screen tcell.Screen) {
 	}
 }
 
+func (b *button) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+	return b.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+		switch key := event.Key(); key {
+		case tcell.KeyEnter:
+			// Selected
+			if b.selected != nil {
+				b.selected()
+			}
+		}
+	})
+}
+
 type Sidepane struct {
 	*tview.Box
 }
