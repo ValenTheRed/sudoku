@@ -124,3 +124,22 @@ func viewDefaultColorScheme(theme ColorScheme) tview.Primitive {
 
 	return grid
 }
+
+// colorBlend blends color src with sink. alpha must be in the closed
+// interval [0, 100]. A value of 0 for alpha results in sink and a value
+// of 100 results in src. Formula:
+//	(b*alpha + a*(100 - alpha)) / 2
+func colorBlend(src, sink tcell.Color, alpha int32) tcell.Color {
+	r, g, b := src.RGB()
+	srcRGB := []int32{r, g, b}
+	r, g, b = sink.RGB()
+	sinkRGB := []int32{r, g, b}
+	blendChannel := func(i int) int32 {
+		return int32((alpha*srcRGB[i] + (100-alpha)*sinkRGB[i]) / 100)
+	}
+	return tcell.NewRGBColor(
+		blendChannel(0),
+		blendChannel(1),
+		blendChannel(2),
+	)
+}
