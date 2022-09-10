@@ -70,7 +70,11 @@ func (h *SudokuHeader) Draw(screen tcell.Screen) {
 // MouseHandler passes focus to grid.
 func (h *SudokuHeader) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, func(tview.Primitive)) (bool, tview.Primitive) {
 	return h.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
-		if h.InRect(event.Position()) {
+		if !h.InRect(event.Position()) {
+			return
+		}
+		switch action {
+		case tview.MouseLeftDown, tview.MouseLeftClick:
 			setFocus(h.frame.grid)
 			consumed = true
 		}
