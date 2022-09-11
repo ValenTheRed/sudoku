@@ -117,7 +117,7 @@ func (b *button) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, func(
 
 type Sidepane struct {
 	*tview.Box
-	buttons [6]*button
+	Buttons [6]*button
 }
 
 func NewSidepane() *Sidepane {
@@ -141,7 +141,7 @@ func NewSidepane() *Sidepane {
 		{'', "Switch theme"},
 		{'', "Change Accent"},
 	} {
-		s.buttons[i] = newButton(item.icon, item.label)
+		s.Buttons[i] = newButton(item.icon, item.label)
 	}
 
 	return s
@@ -156,7 +156,7 @@ func (s *Sidepane) Draw(screen tcell.Screen) {
 		buttonPadding = 0
 	)
 
-	for _, button := range s.buttons {
+	for _, button := range s.Buttons {
 		button.SetRect(x, y, width, buttonHeight)
 		button.Draw(screen)
 		y += buttonHeight + buttonPadding
@@ -169,7 +169,7 @@ func (s *Sidepane) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, fun
 			return
 		}
 		// Pass mouse events along to the first child item that takes it.
-		for _, button := range s.buttons {
+		for _, button := range s.Buttons {
 			consumed, capture = button.MouseHandler()(action, event, setFocus)
 			if consumed {
 				return consumed, capture

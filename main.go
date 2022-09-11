@@ -5,11 +5,24 @@ import (
 )
 
 func main() {
+	SetTheme(DarkColorScheme)
+
 	app := tview.NewApplication()
 	app.EnableMouse(true)
 
 	frame := NewSudokuFrame()
 	sidepane := NewSidepane()
+	// Theme changer
+	sidepane.Buttons[4].SetSelectedFunc(func() {
+		go func() {
+			t := DarkColorScheme
+			if Theme == DarkColorScheme {
+				t = LightColorScheme
+			}
+			SetTheme(t)
+			app.Draw()
+		}()
+	})
 
 	root := tview.NewGrid().
 		SetRows(0).SetColumns(-1, -3).

@@ -62,12 +62,15 @@ var (
 
 // The theme and accent color to be used within the application.
 var (
-	Theme = DarkColorScheme
-	// Theme  = LightColorScheme
-	Accent = Theme.purple
+	Theme  ColorScheme
+	Accent tcell.Color
 )
 
-func init() {
+func SetTheme(t ColorScheme) {
+	Theme = t
+	// Theme  = LightColorScheme
+	Accent = Theme.purple
+
 	tview.Styles.PrimaryTextColor = Theme.foreground
 	tview.Styles.InverseTextColor = Accent
 
