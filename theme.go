@@ -62,14 +62,15 @@ var (
 
 // The theme and accent color to be used within the application.
 var (
-	Theme  ColorScheme
-	Accent tcell.Color
+	Theme               ColorScheme
+	BlendAccent, Accent tcell.Color
 )
 
 func SetTheme(t ColorScheme) {
 	Theme = t
 	// Theme  = LightColorScheme
 	Accent = Theme.purple
+	BlendAccent = colorBlend(Accent, Theme.background, 20)
 }
 
 // viewDefaultColorScheme is used to display the colorscheme as it would

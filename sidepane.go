@@ -54,7 +54,7 @@ func (b *button) SetSelectedFunc(f func()) *button {
 
 func (b *button) Draw(screen tcell.Screen) {
 	defaultStyle := tcell.StyleDefault.
-		Background(colorBlend(Accent, Theme.background, 20)).
+		Background(BlendAccent).
 		Foreground(Theme.foreground)
 	selectedStyle := tcell.StyleDefault.
 		Background(Accent).
@@ -143,9 +143,7 @@ func NewSidepane() *Sidepane {
 }
 
 func (s *Sidepane) Draw(screen tcell.Screen) {
-	s.SetBackgroundColor(
-		colorBlend(Accent, Theme.background, 20),
-	)
+	s.SetBackgroundColor(BlendAccent)
 	s.DrawForSubclass(screen, s)
 	x, y, width, _ := s.GetInnerRect()
 
