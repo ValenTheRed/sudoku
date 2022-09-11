@@ -160,6 +160,7 @@ func (g *SudokuGrid) Draw(screen tcell.Screen) {
 		crossBorder = tview.BoxDrawingsHeavyVerticalAndHorizontal
 	)
 
+	g.Box.SetBackgroundColor(Theme.background)
 	g.Box.DrawForSubclass(screen, g)
 	X, Y := g.centerCoordinates()
 

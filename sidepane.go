@@ -18,9 +18,6 @@ type button struct {
 	// icon.
 	text string
 
-	defaultStyle  tcell.Style
-	selectedStyle tcell.Style
-
 	// Optional func that will be triggered when button is pressed.
 	selected func()
 }
@@ -28,17 +25,9 @@ type button struct {
 func newButton(icon rune, text string) *button {
 	return &button{
 		Box: tview.NewBox().
-			SetBorder(true).
-			SetBorderColor(Accent),
-		icon:  icon,
+			SetBorder(true),
+		icon: icon,
 		text: text,
-		defaultStyle: tcell.StyleDefault.
-			Background(colorBlend(Accent, tview.Styles.PrimitiveBackgroundColor, 20)).
-			Foreground(tview.Styles.PrimaryTextColor),
-		selectedStyle: tcell.StyleDefault.
-			Background(Accent).
-			Foreground(tview.Styles.PrimaryTextColor).
-			Attributes(tcell.AttrUnderline),
 	}
 }
 
@@ -64,11 +53,20 @@ func (b *button) SetSelectedFunc(f func()) *button {
 }
 
 func (b *button) Draw(screen tcell.Screen) {
-	style := b.defaultStyle
+	defaultStyle := tcell.StyleDefault.
+		Background(colorBlend(Accent, Theme.background, 20)).
+		Foreground(Theme.foreground)
+	selectedStyle := tcell.StyleDefault.
+		Background(Accent).
+		Foreground(Theme.foreground).
+		Attributes(tcell.AttrUnderline)
+
+	style := defaultStyle
 	if b.HasFocus() {
-		style = b.selectedStyle
+		style = selectedStyle
 	}
 	_, bg, _ := style.Decompose()
+	b.SetBorderColor(Accent)
 	b.SetBackgroundColor(bg)
 	b.DrawForSubclass(screen, b)
 
@@ -125,9 +123,6 @@ func NewSidepane() *Sidepane {
 		Box: tview.NewBox(),
 	}
 
-	s.SetBackgroundColor(
-		colorBlend(Accent, tview.Styles.PrimitiveBackgroundColor, 20),
-	)
 	s.SetBorderPadding(1, 1, 1, 1)
 
 	for i, item := range [6]struct {
@@ -148,6 +143,9 @@ func NewSidepane() *Sidepane {
 }
 
 func (s *Sidepane) Draw(screen tcell.Screen) {
+	s.SetBackgroundColor(
+		colorBlend(Accent, Theme.background, 20),
+	)
 	s.DrawForSubclass(screen, s)
 	x, y, width, _ := s.GetInnerRect()
 

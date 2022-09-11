@@ -55,6 +55,7 @@ func NewSudokuFooter(frame *SudokuFrame) *SudokuFooter {
 
 // Draw draws f horizontally centered with one cell width gap at the top.
 func (f *SudokuFooter) Draw(screen tcell.Screen) {
+	f.SetBackgroundColor(Theme.background)
 	f.DrawForSubclass(screen, f)
 
 	// assumption: no borders around numbers.
@@ -73,6 +74,10 @@ func (f *SudokuFooter) Draw(screen tcell.Screen) {
 	x = X + (sudokuWidth-width)/2
 
 	for i, button := range f.buttons {
+		button.SetBackgroundColor(Theme.uiSurface)
+		button.SetBackgroundColorActivated(Theme.foreground)
+		button.SetLabelColor(Theme.foreground)
+		button.SetLabelColorActivated(Accent)
 		if i == 5 {
 			y += cellHeight
 		}
