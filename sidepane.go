@@ -159,6 +159,17 @@ func (s *Sidepane) Draw(screen tcell.Screen) {
 	}
 }
 
+// HasFocus returns whether or not this primitive has focus.
+// NOTE: Having this method fixes the issue where when switching from a
+func (s *Sidepane) HasFocus() bool {
+	for _, button := range s.Buttons {
+		if button.HasFocus() {
+			return true
+		}
+	}
+	return s.Box.HasFocus()
+}
+
 func (s *Sidepane) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, func(tview.Primitive)) (bool, tview.Primitive) {
 	return s.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
 		if !s.InRect(event.Position()) {
