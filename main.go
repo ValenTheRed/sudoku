@@ -22,6 +22,13 @@ func main() {
 	restartModal.SetText("Do you want to restart this game?")
 	restartModal.AddButtons([]string{"Cancel", "Yes"})
 
+	// Validate game
+	validateModal := NewModal()
+	InitModalStyle(validateModal)
+	validateModal.SetText("Do you want to validate the puzzle?")
+	validateModal.AddButtons([]string{"Cancel", "Yes"})
+	validateModal.SetFocus(1)
+
 	// Theme changer
 	sidepane.Buttons[4].SetSelectedFunc(func() {
 		go func() {
@@ -31,6 +38,7 @@ func main() {
 			}
 			SetTheme(t)
 			InitModalStyle(restartModal)
+			InitModalStyle(validateModal)
 			app.Draw()
 		}()
 	})
@@ -43,6 +51,16 @@ func main() {
 	pages := tview.NewPages()
 	pages.AddPage("grid", grid, true, true)
 	pages.AddPage("restart", restartModal, true, false)
+	pages.AddPage("validate", validateModal, true, false)
+	sidepane.Buttons[1].SetSelectedFunc(func() {
+		pages.ShowPage("validate")
+	})
+	validateModal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+		if buttonLabel == "Yes" {
+			// TODO: validating logic
+		}
+		pages.SwitchToPage("grid")
+	})
 	sidepane.Buttons[3].SetSelectedFunc(func() {
 		pages.ShowPage("restart")
 	})
