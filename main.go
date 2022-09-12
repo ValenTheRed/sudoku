@@ -15,10 +15,13 @@ func main() {
 	})
 
 	sidepane := NewSidepane()
+
 	// Restart this game
-	restartModal := tview.NewModal()
-	restartModal.SetText("Do you want to restart this game?").
-		AddButtons([]string{"Cancel", "Yes"})
+	restartModal := NewModal()
+	InitModalStyle(restartModal)
+	restartModal.SetText("Do you want to restart this game?")
+	restartModal.AddButtons([]string{"Cancel", "Yes"})
+
 	// Theme changer
 	sidepane.Buttons[4].SetSelectedFunc(func() {
 		go func() {
@@ -27,6 +30,7 @@ func main() {
 				t = LightColorScheme
 			}
 			SetTheme(t)
+			InitModalStyle(restartModal)
 			app.Draw()
 		}()
 	})
