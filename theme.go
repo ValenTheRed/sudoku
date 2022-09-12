@@ -73,6 +73,16 @@ func SetTheme(t ColorScheme) {
 	BlendAccent = colorBlend(Accent, Theme.background, 20)
 }
 
+// InitModalStyle initialsies Modal m with a custom, default style.
+func InitModalStyle(m *Modal) *Modal {
+	m.SetBorderColor(Accent)
+	m.SetBackgroundColor(Theme.background)
+	m.SetButtonBackgroundColor(Theme.uiSurface)
+	m.SetButtonTextColor(Theme.foreground)
+	m.SetTextColor(Theme.foreground)
+	return m
+}
+
 // viewDefaultColorScheme is used to display the colorscheme as it would
 // be used in the application for testing purposes. It returns a
 // Primitive to be set as the root of the application.
