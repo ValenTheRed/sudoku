@@ -68,6 +68,7 @@ func main() {
 			// TODO: validating logic
 		}
 		pages.SwitchToPage("grid")
+		validateModal.SetFocus(1)
 	})
 	sidepane.Buttons[2].SetSelectedFunc(func() {
 		pages.ShowPage("solve")
@@ -77,6 +78,7 @@ func main() {
 			// TODO: auto-solve logic
 		}
 		pages.SwitchToPage("grid")
+		solveModal.SetFocus(0)
 	})
 	sidepane.Buttons[3].SetSelectedFunc(func() {
 		pages.ShowPage("restart")
@@ -86,6 +88,7 @@ func main() {
 			// TODO: restarting logic
 		}
 		pages.SwitchToPage("grid")
+		restartModal.SetFocus(0)
 	})
 
 	frame.timer.Start()
