@@ -55,6 +55,12 @@ func NewModal() *Modal {
 	return m
 }
 
+// SetBorderColor sets the color of the modal frame border.
+func (m *Modal) SetBorderColor(color tcell.Color) *Modal {
+	m.frame.SetBorderColor(color)
+	return m
+}
+
 // SetBackgroundColor sets the color of the modal frame background.
 func (m *Modal) SetBackgroundColor(color tcell.Color) *Modal {
 	m.form.SetBackgroundColor(color)
