@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/rivo/tview"
 )
 
@@ -79,13 +81,8 @@ func main() {
 	})
 	accentModal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 		switch buttonLabel {
-		case "cyan":
-		case "purple":
-		case "pink":
-		case "red":
-		case "orange":
-		case "yellow":
-		case "green":
+		case "Cyan", "Purple", "Pink", "Red", "Orange", "Yellow", "Green":
+			switchAppTheme(Theme, strings.ToLower(buttonLabel))
 		}
 		pages.SwitchToPage("grid")
 	})
