@@ -114,18 +114,20 @@ func (b *button) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, func(
 }
 
 type Sidepane struct {
-	*tview.Box
-	Buttons [6]*button
+	*tview.Flex
 }
 
 func NewSidepane() *Sidepane {
 	s := &Sidepane{
-		Box: tview.NewBox(),
+		Flex: tview.NewFlex(),
 	}
+	s.Box = tview.NewBox()
+	s.SetDirection(tview.FlexRow)
+	InitSidepaneStyle(s)
 
 	s.SetBorderPadding(1, 1, 1, 1)
 
-	for i, item := range [6]struct {
+	for _, item := range [6]struct {
 		icon  rune
 		label string
 	}{
@@ -136,52 +138,17 @@ func NewSidepane() *Sidepane {
 		{'', "Switch theme"},
 		{'', "Change Accent"},
 	} {
-		s.Buttons[i] = newButton(item.icon, item.label)
+		s.AddItem(newButton(item.icon, item.label), 3, 1, false)
 	}
 
 	return s
 }
 
-func (s *Sidepane) Draw(screen tcell.Screen) {
-	s.SetBackgroundColor(BlendAccent)
-	s.DrawForSubclass(screen, s)
-	x, y, width, _ := s.GetInnerRect()
-
-	const (
-		buttonHeight  = 3
-		buttonPadding = 0
-	)
-
-	for _, button := range s.Buttons {
-		button.SetRect(x, y, width, buttonHeight)
-		button.Draw(screen)
-		y += buttonHeight + buttonPadding
-	}
+func (s *Sidepane) GetButton(index int) *button {
+	return s.GetItem(index).(*button)
 }
 
-// HasFocus returns whether or not this primitive has focus.
-// NOTE: Having this method fixes the issue where when switching from a
-func (s *Sidepane) HasFocus() bool {
-	for _, button := range s.Buttons {
-		if button.HasFocus() {
-			return true
-		}
-	}
-	return s.Box.HasFocus()
-}
-
-func (s *Sidepane) MouseHandler() func(tview.MouseAction, *tcell.EventMouse, func(tview.Primitive)) (bool, tview.Primitive) {
-	return s.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
-		if !s.InRect(event.Position()) {
-			return
-		}
-		// Pass mouse events along to the first child item that takes it.
-		for _, button := range s.Buttons {
-			consumed, capture = button.MouseHandler()(action, event, setFocus)
-			if consumed {
-				return consumed, capture
-			}
-		}
-		return
-	})
+func InitSidepaneStyle(s *Sidepane) *Sidepane {
+	s.Box.SetBackgroundColor(BlendAccent)
+	return s
 }

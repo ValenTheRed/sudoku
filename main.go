@@ -36,13 +36,14 @@ func main() {
 	validateModal.SetFocus(1)
 
 	// Theme changer
-	sidepane.Buttons[4].SetSelectedFunc(func() {
+	sidepane.GetButton(4).SetSelectedFunc(func() {
 		go func() {
 			t := DarkColorScheme
 			if Theme == DarkColorScheme {
 				t = LightColorScheme
 			}
 			SetTheme(t)
+			InitSidepaneStyle(sidepane)
 			InitModalStyle(solveModal)
 			InitModalStyle(restartModal)
 			InitModalStyle(validateModal)
@@ -60,7 +61,7 @@ func main() {
 	pages.AddPage("restart", restartModal, true, false)
 	pages.AddPage("solve", solveModal, true, false)
 	pages.AddPage("validate", validateModal, true, false)
-	sidepane.Buttons[1].SetSelectedFunc(func() {
+	sidepane.GetButton(1).SetSelectedFunc(func() {
 		pages.ShowPage("validate")
 	})
 	validateModal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
@@ -70,7 +71,7 @@ func main() {
 		pages.SwitchToPage("grid")
 		validateModal.SetFocus(1)
 	})
-	sidepane.Buttons[2].SetSelectedFunc(func() {
+	sidepane.GetButton(2).SetSelectedFunc(func() {
 		pages.ShowPage("solve")
 	})
 	solveModal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
@@ -80,7 +81,7 @@ func main() {
 		pages.SwitchToPage("grid")
 		solveModal.SetFocus(0)
 	})
-	sidepane.Buttons[3].SetSelectedFunc(func() {
+	sidepane.GetButton(3).SetSelectedFunc(func() {
 		pages.ShowPage("restart")
 	})
 	restartModal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
