@@ -38,7 +38,7 @@ func (h *SudokuHeader) SetTextAlign(align int) *SudokuHeader {
 // Draw draws SudokuHeader left aligned and at the bottom left of the
 // bounding box.
 func (h *SudokuHeader) Draw(screen tcell.Screen) {
-	h.SetBackgroundColor(Theme.background)
+	h.SetBackgroundColor(ColorSchemes[Theme]["background"])
 	h.DrawForSubclass(screen, h)
 
 	X, _ := h.frame.grid.centerCoordinates()
@@ -55,14 +55,14 @@ func (h *SudokuHeader) Draw(screen tcell.Screen) {
 	y = y + height - 2
 
 	// first row
-	textStyle := tcell.StyleDefault.Background(Theme.background).Foreground(Theme.foreground)
+	textStyle := tcell.StyleDefault.Background(ColorSchemes[Theme]["background"]).Foreground(ColorSchemes[Theme]["foreground"])
 	for i, r := range h.GetText(true) {
 		screen.SetContent(x+i, y, r, nil, textStyle)
 	}
 
 	y++
 	// second row
-	underlineStyle := tcell.StyleDefault.Background(Theme.background).Foreground(Accent)
+	underlineStyle := tcell.StyleDefault.Background(ColorSchemes[Theme]["background"]).Foreground(ColorSchemes[Theme][Accent])
 	for i := range h.GetText(true) {
 		screen.SetContent(x+i, y, '▔', nil, underlineStyle)
 	}

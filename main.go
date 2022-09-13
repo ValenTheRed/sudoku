@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	SetTheme(DarkColorScheme)
+	SetTheme("dark", "purple")
 
 	app := tview.NewApplication().EnableMouse(true)
 
@@ -45,11 +45,11 @@ func main() {
 	// Theme changer
 	sidepane.GetButton(4).SetSelectedFunc(func() {
 		go func() {
-			t := DarkColorScheme
-			if Theme == DarkColorScheme {
-				t = LightColorScheme
+			t := "dark"
+			if Theme == "dark" {
+				t = "light"
 			}
-			SetTheme(t)
+			SetTheme(t, Accent)
 			InitSidepaneStyle(sidepane)
 			InitModalStyle(solveModal)
 			InitModalStyle(restartModal)

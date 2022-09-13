@@ -160,14 +160,14 @@ func (g *SudokuGrid) Draw(screen tcell.Screen) {
 		crossBorder = tview.BoxDrawingsHeavyVerticalAndHorizontal
 	)
 
-	g.Box.SetBackgroundColor(Theme.background)
+	g.Box.SetBackgroundColor(ColorSchemes[Theme]["background"])
 	g.Box.DrawForSubclass(screen, g)
 	X, Y := g.centerCoordinates()
 
-	heavyBorderStyle := tcell.StyleDefault.Foreground(Accent).Background(Theme.background)
-	lightBorderStyle := tcell.StyleDefault.Foreground(Theme.uiSurface).Background(Theme.background)
-	cellStyle := tcell.StyleDefault.Foreground(Theme.foreground).Background(Theme.background)
-	readonlyStyle := tcell.StyleDefault.Foreground(Theme.foreground).Background(Accent)
+	heavyBorderStyle := tcell.StyleDefault.Foreground(ColorSchemes[Theme][Accent]).Background(ColorSchemes[Theme]["background"])
+	lightBorderStyle := tcell.StyleDefault.Foreground(ColorSchemes[Theme]["uiSurface"]).Background(ColorSchemes[Theme]["background"])
+	cellStyle := tcell.StyleDefault.Foreground(ColorSchemes[Theme]["foreground"]).Background(ColorSchemes[Theme]["background"])
+	readonlyStyle := tcell.StyleDefault.Foreground(ColorSchemes[Theme]["foreground"]).Background(ColorSchemes[Theme][Accent])
 
 	// helper function to draw i-th cell at row y and column x.
 	drawCell := func(c *SudokuCell, style func(tcell.Style) tcell.Style, x, y int) {

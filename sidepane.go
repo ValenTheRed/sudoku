@@ -55,10 +55,10 @@ func (b *button) SetSelectedFunc(f func()) *button {
 func (b *button) Draw(screen tcell.Screen) {
 	defaultStyle := tcell.StyleDefault.
 		Background(BlendAccent).
-		Foreground(Theme.foreground)
+		Foreground(ColorSchemes[Theme]["foreground"])
 	selectedStyle := tcell.StyleDefault.
-		Background(Accent).
-		Foreground(Theme.foreground).
+		Background(ColorSchemes[Theme][Accent]).
+		Foreground(ColorSchemes[Theme]["foreground"]).
 		Attributes(tcell.AttrUnderline)
 
 	style := defaultStyle
@@ -66,7 +66,7 @@ func (b *button) Draw(screen tcell.Screen) {
 		style = selectedStyle
 	}
 	_, bg, _ := style.Decompose()
-	b.SetBorderColor(Accent)
+	b.SetBorderColor(ColorSchemes[Theme][Accent])
 	b.SetBackgroundColor(bg)
 	b.DrawForSubclass(screen, b)
 
