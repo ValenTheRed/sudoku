@@ -42,14 +42,9 @@ func main() {
 		"Cyan", "Purple", "Pink", "Red", "Orange", "Yellow", "Green",
 	})
 
-	// Theme changer
-	sidepane.GetButton(4).SetSelectedFunc(func() {
+	switchAppTheme := func(t, accent string) {
 		go func() {
-			t := "dark"
-			if Theme == "dark" {
-				t = "light"
-			}
-			SetTheme(t, Accent)
+			SetTheme(t, accent)
 			InitSidepaneStyle(sidepane)
 			InitModalStyle(solveModal)
 			InitModalStyle(restartModal)
@@ -57,6 +52,15 @@ func main() {
 			InitModalStyle(accentModal)
 			app.Draw()
 		}()
+	}
+
+	// Theme changer
+	sidepane.GetButton(4).SetSelectedFunc(func() {
+		t := "dark"
+		if Theme == "dark" {
+			t = "light"
+		}
+		switchAppTheme(t, Accent)
 	})
 
 	grid := tview.NewGrid()
