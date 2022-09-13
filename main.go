@@ -35,6 +35,13 @@ func main() {
 	validateModal.AddButtons([]string{"Cancel", "Yes"})
 	validateModal.SetFocus(1)
 
+	accentModal := NewModal()
+	InitModalStyle(accentModal)
+	accentModal.SetText("Choose color")
+	accentModal.AddButtons([]string{
+		"Cyan", "Purple", "Pink", "Red", "Orange", "Yellow", "Green",
+	})
+
 	// Theme changer
 	sidepane.GetButton(4).SetSelectedFunc(func() {
 		go func() {
@@ -47,6 +54,7 @@ func main() {
 			InitModalStyle(solveModal)
 			InitModalStyle(restartModal)
 			InitModalStyle(validateModal)
+			InitModalStyle(accentModal)
 			app.Draw()
 		}()
 	})
@@ -61,6 +69,22 @@ func main() {
 	pages.AddPage("restart", restartModal, true, false)
 	pages.AddPage("solve", solveModal, true, false)
 	pages.AddPage("validate", validateModal, true, false)
+	pages.AddPage("accent", accentModal, true, false)
+	sidepane.GetButton(5).SetSelectedFunc(func() {
+		pages.ShowPage("accent")
+	})
+	accentModal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+		switch buttonLabel {
+		case "cyan":
+		case "purple":
+		case "pink":
+		case "red":
+		case "orange":
+		case "yellow":
+		case "green":
+		}
+		pages.SwitchToPage("grid")
+	})
 	sidepane.GetButton(1).SetSelectedFunc(func() {
 		pages.ShowPage("validate")
 	})
