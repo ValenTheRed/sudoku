@@ -85,10 +85,10 @@ func main() {
 	solveModal.AddButtons([]string{"Cancel", "Yes"})
 
 	// Restart this game
-	restartModal := NewModal()
-	InitModalStyle(restartModal)
-	restartModal.SetText("Do you want to restart this game?")
-	restartModal.AddButtons([]string{"Cancel", "Yes"})
+	resetModal := NewModal()
+	InitModalStyle(resetModal)
+	resetModal.SetText("Do you want to reset the grid to it's initial value? This doesn't reset the clock.")
+	resetModal.AddButtons([]string{"Cancel", "Yes"})
 
 	// Validate game
 	validateModal := NewModal()
@@ -109,7 +109,7 @@ func main() {
 			SetTheme(t, accent)
 			InitSidepaneStyle(sidepane)
 			InitModalStyle(solveModal)
-			InitModalStyle(restartModal)
+			InitModalStyle(resetModal)
 			InitModalStyle(validateModal)
 			InitModalStyle(accentModal)
 			app.Draw()
@@ -132,7 +132,7 @@ func main() {
 
 	pages := tview.NewPages()
 	pages.AddPage("grid", grid, true, true)
-	pages.AddPage("restart", restartModal, true, false)
+	pages.AddPage("reset", resetModal, true, false)
 	pages.AddPage("solve", solveModal, true, false)
 	pages.AddPage("validate", validateModal, true, false)
 	pages.AddPage("accent", accentModal, true, false)
@@ -170,14 +170,14 @@ func main() {
 		solveModal.SetFocus(0)
 	})
 	sidepane.GetButton(3).SetSelectedFunc(func() {
-		pages.ShowPage("restart")
+		pages.ShowPage("reset")
 	})
-	restartModal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+	resetModal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 		if buttonLabel == "Yes" {
-			// TODO: restarting logic
+			frame.grid.ClearCells()
 		}
 		pages.SwitchToPage("grid")
-		restartModal.SetFocus(0)
+		resetModal.SetFocus(0)
 	})
 
 	frame.timer.Start()

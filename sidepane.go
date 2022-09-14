@@ -134,7 +134,7 @@ func NewSidepane() *Sidepane {
 		{'', "Undo"},
 		{'', "Validate"},
 		{'', "Solve"},
-		{'', "Restart"},
+		{'', "Reset grid"},
 		{'', "Switch theme"},
 		{'', "Change Accent"},
 	} {
