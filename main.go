@@ -42,6 +42,13 @@ func main() {
 	frame.timer.SetChangedFunc(func() {
 		app.Draw()
 	})
+	func() {
+		file, err := os.OpenFile(undopath, os.O_CREATE|os.O_RDONLY, 0750)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		frame.grid.ReadUndoHistoryFromFile(file)
+	}()
 
 	sidepane := NewSidepane()
 
@@ -149,6 +156,17 @@ func main() {
 
 	frame.timer.Start()
 	if err := app.SetRoot(pages, true).SetFocus(pages).Run(); err != nil {
-		panic(err)
+		log.Println(err)
 	}
+
+	file, err := os.OpenFile(
+		undopath,
+		os.O_WRONLY|os.O_CREATE|os.O_TRUNC,
+		0750,
+	)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer file.Close()
+	frame.grid.FlushUndoHistoryToFile(file)
 }
