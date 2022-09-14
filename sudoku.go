@@ -104,10 +104,27 @@ func (g *SudokuGrid) SetCellWithoutUndo(r, c, digit int) *SudokuGrid {
 // undo history.
 func (g *SudokuGrid) SetCellWithUndo(r, c, digit int) *SudokuGrid {
 	cell := g.GetCell(r, c)
+	if byte(digit) == cell.Value() {
+		return g
+	}
 	g.undoHistory = append(g.undoHistory, undoItem{
 		byte(r), byte(c), cell.Value(),
 	})
 	cell.SetValue(digit)
+	return g
+}
+
+// Undo undos the last move.
+func (g *SudokuGrid) Undo() *SudokuGrid {
+	if len(g.undoHistory) > 0 {
+		item := g.undoHistory[len(g.undoHistory)-1]
+		g.undoHistory = g.undoHistory[:len(g.undoHistory)-1]
+		g.SetCellWithoutUndo(
+			int(item.row),
+			int(item.col),
+			int(item.digit),
+		)
+	}
 	return g
 }
 
