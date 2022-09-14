@@ -38,8 +38,8 @@ func NewSudokuFooter(frame *SudokuFrame) *SudokuFooter {
 			// automatically and instaneously, and I've no idea how.
 			// It updates before the timer updates, so timer's
 			// SetChangedFunc() handler can't be the reason.
-			if cell := g.GetCell(g.SelectedCell()); !cell.Readonly() {
-				cell.SetValue(int(char - '0'))
+			if r, c := g.SelectedCell(); !g.GetCell(r, c).Readonly() {
+				g.SetCellWithUndo(r, c, int(char - '0'))
 			}
 		})
 		return b

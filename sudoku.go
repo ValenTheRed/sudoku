@@ -195,7 +195,7 @@ func (g *SudokuGrid) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				cell := g.GetCell(g.selectedRow, g.selectedColumn)
 				if !cell.Readonly() {
-					cell.SetValue(int((r - '0')))
+					g.SetCellWithUndo(g.selectedRow, g.selectedColumn, int(r - '0'))
 				}
 			}
 		case tcell.KeyDown:
