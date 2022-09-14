@@ -59,7 +59,7 @@ func NewSudokuFrameFromFile(savefile, undofile *os.File) *SudokuFrame {
 		log.Fatalf("NewSudokuFrameFromFile: parsing puzzle: invalid length: have %d, want 81 <= length <= 162", l)
 	}
 	for i, j := 0, 0; i < len(bytes); i++ {
-		if b := bytes[i]; b != '_' || b != '.' || b < '0' || b > '9' {
+		if b := bytes[i]; b != '_' && b != '.' && !(b >= '0' && b <= '9') {
 			log.Fatalln("NewSudokuFrameFromFile: parsing puzzle: character must be in the set [_.1-9]")
 		}
 		r, c := j/9, j%9
