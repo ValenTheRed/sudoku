@@ -1,10 +1,37 @@
 package main
 
 import (
+	"log"
+	"os"
+	"path"
 	"strings"
 
 	"github.com/rivo/tview"
 )
+
+// undopath stores the path to the undofile
+var undopath string
+
+func init() {
+	// set undopath to the path of the undo file
+
+	localshare, exists := os.LookupEnv("XDG_DATA_HOME")
+	if !exists {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		localshare = path.Join(home, `.local/share/sudoku`)
+	} else {
+		localshare = path.Join(localshare, `sudoku`)
+	}
+
+	undopath = path.Join(localshare, `undo`)
+
+	if err := os.MkdirAll(localshare, 0750); err != nil {
+		log.Fatalln(err)
+	}
+}
 
 func main() {
 	SetTheme("dark", "purple")
