@@ -137,13 +137,16 @@ func (g *SudokuGrid) Undo() *SudokuGrid {
 
 // FlushUndoHistoryToFile writes the entire undo history to file and
 // resets the history.
+// NOTE: empty cell is denoted by '.'.
 func (g *SudokuGrid) FlushUndoHistoryToFile(file *os.File) *SudokuGrid {
 	for _, item := range g.undoHistory {
-		file.Write([]byte{
-			item.row + '0', ' ',
-			item.col + '0', ' ',
-			item.digit + '0', '\n',
-		})
+		a := item.row + '0'
+		b := item.col + '0'
+		c := byte('.')
+		if d := item.digit; d != 0 {
+			c = d + '0'
+		}
+		file.Write([]byte{a, ' ', b, ' ', c, '\n'})
 	}
 	g.undoHistory = nil
 	return g
@@ -153,10 +156,14 @@ func (g *SudokuGrid) FlushUndoHistoryToFile(file *os.File) *SudokuGrid {
 // g.
 func (g *SudokuGrid) ReadUndoHistoryFromFile(file *os.File) *SudokuGrid {
 	for s := bufio.NewScanner(file); s.Scan(); {
-		b := s.Bytes()
-		g.undoHistory = append(g.undoHistory, undoItem{
-			b[0] - '0', b[2] - '0', b[4] - '0',
-		})
+		line := s.Bytes()
+		a, b, c := line[0] - '0', line[2] - '0', line[4]
+		if c == '.' {
+			c = '0'
+		} else {
+			c = c - '0'
+		}
+		g.undoHistory = append(g.undoHistory, undoItem{a, b, c})
 	}
 	return g
 }
