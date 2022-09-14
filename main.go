@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"path"
@@ -9,10 +10,19 @@ import (
 	"github.com/rivo/tview"
 )
 
-// undopath stores the path to the undofile
-var undopath string
+var (
+	// undopath stores the path to the undofile
+	undopath string
+
+	// continueFlag set to true will restore the puzzle from the
+	// previous session.
+	continueFlag bool
+)
 
 func init() {
+	flag.BoolVar(&continueFlag, "continue", false, "restore previous sesssions puzzle")
+	flag.BoolVar(&continueFlag, "c", false, "restore previous sesssions puzzle")
+
 	// set undopath to the path of the undo file
 
 	localshare, exists := os.LookupEnv("XDG_DATA_HOME")
@@ -34,6 +44,8 @@ func init() {
 }
 
 func main() {
+	flag.Parse()
+
 	SetTheme("dark", "purple")
 
 	app := tview.NewApplication().EnableMouse(true)
@@ -42,13 +54,16 @@ func main() {
 	frame.timer.SetChangedFunc(func() {
 		app.Draw()
 	})
-	func() {
-		file, err := os.OpenFile(undopath, os.O_CREATE|os.O_RDONLY, 0750)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		frame.grid.ReadUndoHistoryFromFile(file)
-	}()
+	if continueFlag {
+		func() {
+			file, err := os.OpenFile(undopath, os.O_CREATE|os.O_RDONLY, 0750)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer file.Close()
+			frame.grid.ReadUndoHistoryFromFile(file)
+		}()
+	}
 
 	sidepane := NewSidepane()
 
