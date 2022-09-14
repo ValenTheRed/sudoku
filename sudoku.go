@@ -23,8 +23,12 @@ func NewReadonlySudokuCell(digit int) *SudokuCell {
 	return NewSudokuCell(digit).SetReadonly(true)
 }
 
-func (c *SudokuCell) Value() byte {
-	return c.value
+// Value returns the digit at c.
+func (c *SudokuCell) Value() int {
+	if c.value == ' ' {
+		return 0
+	}
+	return int(c.value - '0')
 }
 
 func (c *SudokuCell) SetValue(digit int) *SudokuCell {
@@ -107,11 +111,11 @@ func (g *SudokuGrid) SetCellWithoutUndo(r, c, digit int) *SudokuGrid {
 // undo history.
 func (g *SudokuGrid) SetCellWithUndo(r, c, digit int) *SudokuGrid {
 	cell := g.GetCell(r, c)
-	if byte(digit) == cell.Value() {
+	if digit == cell.Value() {
 		return g
 	}
 	g.undoHistory = append(g.undoHistory, undoItem{
-		byte(r), byte(c), cell.Value(),
+		byte(r), byte(c), byte(cell.Value()),
 	})
 	cell.SetValue(digit)
 	return g
