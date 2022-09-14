@@ -76,6 +76,9 @@ func main() {
 	pages.AddPage("solve", solveModal, true, false)
 	pages.AddPage("validate", validateModal, true, false)
 	pages.AddPage("accent", accentModal, true, false)
+	sidepane.GetButton(0).SetSelectedFunc(func() {
+		frame.grid.Undo()
+	})
 	sidepane.GetButton(5).SetSelectedFunc(func() {
 		pages.ShowPage("accent")
 	})
