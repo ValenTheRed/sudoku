@@ -83,6 +83,19 @@ func NewSudokuGrid() *SudokuGrid {
 	}
 }
 
+// ClearCells clears all non-readonly cells and the undo history.
+func (g *SudokuGrid) ClearCells() *SudokuGrid {
+	for r := 0; r < 9; r++ {
+		for c := 0; c < 9; c++ {
+			if !g.GetCell(r, c).Readonly() {
+				g.SetCellWithUndo(r, c, 0)
+			}
+		}
+	}
+	g.undoHistory = nil
+	return g
+}
+
 // SelectCell focuses the cell at row r and column c.
 func (g *SudokuGrid) SelectCell(r, c int) *SudokuGrid {
 	g.selectedRow, g.selectedColumn = r, c
@@ -216,7 +229,7 @@ func (g *SudokuGrid) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				cell := g.GetCell(g.selectedRow, g.selectedColumn)
 				if !cell.Readonly() {
-					g.SetCellWithUndo(g.selectedRow, g.selectedColumn, int(r - '0'))
+					g.SetCellWithUndo(g.selectedRow, g.selectedColumn, int(r-'0'))
 				}
 			}
 		case tcell.KeyDown:
