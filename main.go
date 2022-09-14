@@ -185,7 +185,7 @@ func main() {
 		log.Println(err)
 	}
 
-	file, err := os.OpenFile(
+	undofile, err := os.OpenFile(
 		undopath,
 		os.O_WRONLY|os.O_CREATE|os.O_TRUNC,
 		0750,
@@ -193,6 +193,16 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer file.Close()
-	frame.grid.FlushUndoHistoryToFile(file)
+	defer undofile.Close()
+	savefile, err := os.OpenFile(
+		savepath,
+		os.O_WRONLY|os.O_CREATE|os.O_TRUNC,
+		0750,
+	)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer savefile.Close()
+
+	frame.SavePuzzleToFile(savefile, undofile)
 }
