@@ -91,6 +91,14 @@ func (g *SudokuGrid) GetCell(r, c int) *SudokuCell {
 	return g.contents[9*r+c]
 }
 
+// SetCellWithUndo sets the value of cell at row r and column c with the
+// value digit. It doesn't store the previous value of the cell in it's
+// undo history.
+func (g *SudokuGrid) SetCellWithoutUndo(r, c, digit int) *SudokuGrid {
+	g.GetCell(r, c).SetValue(digit)
+	return g
+}
+
 // InputHandler returns the handler for this primitive.
 func (g *SudokuGrid) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	forward := func(pos *int) func() {
