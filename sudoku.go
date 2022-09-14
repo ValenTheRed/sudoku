@@ -50,10 +50,15 @@ func (c *SudokuCell) IsEmpty() bool {
 	return c.value == ' '
 }
 
+type undoItem struct {
+	row, col, digit byte
+}
+
 type SudokuGrid struct {
 	*tview.Box
 	selectedRow, selectedColumn int
 	contents                    [81]*SudokuCell
+	undoHistory                 []undoItem
 }
 
 // NewSudokuGrid returns a new SudokuGrid.
