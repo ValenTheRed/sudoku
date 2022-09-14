@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -144,6 +145,18 @@ func (g *SudokuGrid) FlushUndoHistoryToFile(file *os.File) *SudokuGrid {
 	return g
 }
 
+// ReadUndoHistoryFromFile reads file and appends it's undo history to
+// g.
+func (g *SudokuGrid) ReadUndoHistoryFromFile(file *os.File) *SudokuGrid {
+	for s := bufio.NewScanner(file); s.Scan(); {
+		b := s.Bytes()
+		g.undoHistory = append(g.undoHistory, undoItem{
+			b[0] - '0', b[2] - '0', b[4] - '0',
+		})
+	}
+	return g
+}
+
 // InputHandler returns the handler for this primitive.
 func (g *SudokuGrid) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	forward := func(pos *int) func() {
@@ -199,7 +212,7 @@ const (
 	// cell length = len(cell contents + border character)
 
 	// cell vertical length = len('<number>' + '-') = 2
-	SudokuGridRowHeight   = 2
+	SudokuGridRowHeight = 2
 	// cell horizontal length = len(' ' + '<number>' ' ' + '|') = 4
 	SudokuGridColumnWidth = 4
 )
