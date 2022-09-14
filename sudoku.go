@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -125,6 +127,20 @@ func (g *SudokuGrid) Undo() *SudokuGrid {
 			int(item.digit),
 		)
 	}
+	return g
+}
+
+// FlushUndoHistoryToFile writes the entire undo history to file and
+// resets the history.
+func (g *SudokuGrid) FlushUndoHistoryToFile(file *os.File) *SudokuGrid {
+	for _, item := range g.undoHistory {
+		file.Write([]byte{
+			item.row + '0', ' ',
+			item.col + '0', ' ',
+			item.digit + '0', '\n',
+		})
+	}
+	g.undoHistory = nil
 	return g
 }
 
