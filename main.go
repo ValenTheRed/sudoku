@@ -14,6 +14,10 @@ var (
 	// undopath stores the path to the undofile
 	undopath string
 
+	// savepath stores the path of the file where puzzle information
+	// will be stored for continu-ing purposes.
+	savepath string
+
 	// continueFlag set to true will restore the puzzle from the
 	// previous session.
 	continueFlag bool
@@ -37,6 +41,7 @@ func init() {
 	}
 
 	undopath = path.Join(localshare, `undo`)
+	savepath = path.Join(localshare, `save`)
 
 	if err := os.MkdirAll(localshare, 0750); err != nil {
 		log.Fatalln(err)
@@ -50,20 +55,26 @@ func main() {
 
 	app := tview.NewApplication().EnableMouse(true)
 
-	frame := NewSudokuFrame()
+	var frame *SudokuFrame
+	if continueFlag {
+		savefile, err := os.Open(savepath)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		undofile, err := os.OpenFile(undopath, os.O_CREATE|os.O_RDONLY, 0750)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		frame = NewSudokuFrameFromFile(savefile, undofile)
+
+		savefile.Close()
+		undofile.Close()
+	} else {
+		frame = NewSudokuFrame()
+	}
 	frame.timer.SetChangedFunc(func() {
 		app.Draw()
 	})
-	if continueFlag {
-		func() {
-			file, err := os.OpenFile(undopath, os.O_CREATE|os.O_RDONLY, 0750)
-			if err != nil {
-				log.Fatalln(err)
-			}
-			defer file.Close()
-			frame.grid.ReadUndoHistoryFromFile(file)
-		}()
-	}
 
 	sidepane := NewSidepane()
 
