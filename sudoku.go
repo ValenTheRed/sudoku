@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"log"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -157,11 +158,24 @@ func (g *SudokuGrid) FlushUndoHistoryToFile(file *os.File) *SudokuGrid {
 func (g *SudokuGrid) ReadUndoHistoryFromFile(file *os.File) *SudokuGrid {
 	for s := bufio.NewScanner(file); s.Scan(); {
 		line := s.Bytes()
-		a, b, c := line[0] - '0', line[2] - '0', line[4]
+		if len(line) != 5 {
+			log.Fatalf("ReadUndoHistoryFromFile: parsing undo \"%s\": line length must be 5\n", line)
+		}
+		a, b, c := line[0], line[2], line[4]
+		if a < '0' || a > '9' {
+			log.Fatalf("ReadUndoHistoryFromFile: parsing undo: first character is %c, must be in the set [1-9]", a)
+		}
+		a -= '0'
+		if b < '0' || b > '9' {
+			log.Fatalf("ReadUndoHistoryFromFile: parsing undo: second character is %c, must be in the set [1-9]", b)
+		}
+		b -= '0'
 		if c == '.' {
-			c = '0'
-		} else {
+			c = 0
+		} else if c >= '0' && c <= '9' {
 			c = c - '0'
+		} else {
+			log.Fatalf("ReadUndoHistoryFromFile: parsing undo: third character is %c, must be in the set [.1-9]", b)
 		}
 		g.undoHistory = append(g.undoHistory, undoItem{a, b, c})
 	}
