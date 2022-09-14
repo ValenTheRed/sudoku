@@ -109,10 +109,10 @@ func NewSudokuFrameFromFile(savefile, undofile *os.File) *SudokuFrame {
 }
 
 // SavePuzzleToFile saves puzzle, puzzle time, and puzzle difficulty to
-// file, in that order.
+// file, in that order. It also saves the undo history.
 // NOTE: It uses '.' to denote empty cell.
 // NOTE: It appends '_' in front of readonly cells
-func (f *SudokuFrame) SavePuzzleToFile(file *os.File) {
+func (f *SudokuFrame) SavePuzzleToFile(savefile, undofile *os.File) {
 	g := f.grid
 	for r := 0; r < 9; r++ {
 		var s []byte
@@ -130,9 +130,11 @@ func (f *SudokuFrame) SavePuzzleToFile(file *os.File) {
 				s = append(s, v)
 			}
 		}
-		file.Write(s)
+		savefile.Write(s)
 	}
-	file.Write([]byte{'\n'})
-	fmt.Fprintln(file, int(f.timer.elapsed))
-	fmt.Fprintln(file, f.difficulty.GetText(true))
+	savefile.Write([]byte{'\n'})
+	fmt.Fprintln(savefile, int(f.timer.elapsed))
+	fmt.Fprintln(savefile, f.difficulty.GetText(true))
+
+	g.FlushUndoHistoryToFile(undofile)
 }
