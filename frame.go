@@ -26,7 +26,7 @@ func NewSudokuFrame() *SudokuFrame {
 	f.difficulty = NewSudokuHeader(f)
 	f.timer = NewTimer(f)
 	f.numberPad = NewSudokuFooter(f)
-	f.difficulty.SetText("Difficulty")
+	f.difficulty.SetText("Hard")
 
 	f.SetRows(0, 9*SudokuGridRowHeight-1, 0).SetColumns(0, 0)
 	f.
