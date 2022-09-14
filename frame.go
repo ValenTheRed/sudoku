@@ -83,7 +83,7 @@ func NewSudokuFrameFromFile(savefile, undofile *os.File) *SudokuFrame {
 	if t, err := strconv.Atoi(scan.Text()); err != nil {
 		log.Fatalln("NewSudokuFrameFromFile: parsing elapsed time:", err)
 	} else {
-		f.timer.elapsed = second(t)
+		f.timer.SetElapsed(t)
 	}
 
 	// difficulty

@@ -114,6 +114,13 @@ func NewTimer(frame *SudokuFrame) *Timer {
 	return t
 }
 
+// SetElapsed sets the time elapsed for the timer to sec.
+func (t *Timer) SetElapsed(sec int) *Timer {
+	t.elapsed = second(sec)
+	t.SetText(t.elapsed.String())
+	return t
+}
+
 func (t *Timer) Start() {
 	go worker(func() {
 		t.elapsed++
