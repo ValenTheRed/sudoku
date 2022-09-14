@@ -49,31 +49,53 @@ func NewSudokuFrameFromFile(savefile, undofile *os.File) *SudokuFrame {
 	f.numberPad = NewSudokuFooter(f)
 
 	scan := bufio.NewScanner(savefile)
+
 	// puzzle
-	scan.Scan()
+	if !scan.Scan() {
+		log.Fatalln("NewSudokuFrameFromFile: parsing savefile: no puzzle text")
+	}
 	bytes := scan.Bytes()
-	for i, j := 0, 0; i < len(bytes); j++ {
+	if l := len(bytes); l < 81 || l > 2*81 {
+		log.Fatalf("NewSudokuFrameFromFile: parsing puzzle: invalid length: have %d, want 81 <= length <= 162", l)
+	}
+	for i, j := 0, 0; i < len(bytes); i++ {
+		if b := bytes[i]; b != '_' || b != '.' || b < '0' || b > '9' {
+			log.Fatalln("NewSudokuFrameFromFile: parsing puzzle: character must be in the set [_.1-9]")
+		}
 		r, c := j/9, j%9
 		if bytes[i] == '_' {
 			f.grid.GetCell(r, c).SetReadonly(true)
-			i++
+			continue
 		}
 		v := 0
 		if bytes[i] != '.' {
 			v = int(bytes[i] - '0')
 		}
 		f.grid.SetCellWithoutUndo(r, c, v)
+		j++
 	}
+
 	// time
-	scan.Scan()
+	if !scan.Scan() {
+		log.Fatalln("NewSudokuFrameFromFile: parsing savefile: no elapsed time")
+	}
+
 	if t, err := strconv.Atoi(scan.Text()); err != nil {
 		log.Fatalln("NewSudokuFrameFromFile: parsing elapsed time:", err)
 	} else {
 		f.timer.elapsed = second(t)
 	}
+
 	// difficulty
-	scan.Scan()
-	f.difficulty.SetText(scan.Text())
+	if !scan.Scan() {
+		log.Fatalln("NewSudokuFrameFromFile: parsing savefile: no difficulty text")
+	}
+	switch t := scan.Text(); t {
+	case "Easy", "Medium", "Hard":
+		f.difficulty.SetText(scan.Text())
+	default:
+		log.Fatalln("NewSudokuFrameFromFile: parsing difficulty: difficulty must be either one of: Easy, Medium, Hard")
+	}
 
 	f.grid.ReadUndoHistoryFromFile(undofile)
 
