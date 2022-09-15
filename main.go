@@ -61,7 +61,7 @@ func main() {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		undofile, err := os.OpenFile(undopath, os.O_CREATE|os.O_RDONLY, 0750)
+		undofile, err := os.Open(undopath)
 		if err != nil {
 			log.Fatalln(err)
 		}
