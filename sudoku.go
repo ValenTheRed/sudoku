@@ -1,6 +1,10 @@
 package main
 
 import (
+	"bufio"
+	"log"
+	"os"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -20,8 +24,12 @@ func NewReadonlySudokuCell(digit int) *SudokuCell {
 	return NewSudokuCell(digit).SetReadonly(true)
 }
 
-func (c *SudokuCell) Value() byte {
-	return c.value
+// Value returns the digit at c.
+func (c *SudokuCell) Value() int {
+	if c.value == ' ' {
+		return 0
+	}
+	return int(c.value - '0')
 }
 
 func (c *SudokuCell) SetValue(digit int) *SudokuCell {
@@ -50,10 +58,15 @@ func (c *SudokuCell) IsEmpty() bool {
 	return c.value == ' '
 }
 
+type undoItem struct {
+	row, col, digit byte
+}
+
 type SudokuGrid struct {
 	*tview.Box
 	selectedRow, selectedColumn int
 	contents                    [81]*SudokuCell
+	undoHistory                 []undoItem
 }
 
 // NewSudokuGrid returns a new SudokuGrid.
@@ -70,6 +83,19 @@ func NewSudokuGrid() *SudokuGrid {
 	}
 }
 
+// ClearCells clears all non-readonly cells and the undo history.
+func (g *SudokuGrid) ClearCells() *SudokuGrid {
+	for r := 0; r < 9; r++ {
+		for c := 0; c < 9; c++ {
+			if !g.GetCell(r, c).Readonly() {
+				g.SetCellWithUndo(r, c, 0)
+			}
+		}
+	}
+	g.undoHistory = nil
+	return g
+}
+
 // SelectCell focuses the cell at row r and column c.
 func (g *SudokuGrid) SelectCell(r, c int) *SudokuGrid {
 	g.selectedRow, g.selectedColumn = r, c
@@ -84,6 +110,89 @@ func (g *SudokuGrid) SelectedCell() (int, int) {
 // GetCell returns the cell at row r and column c.
 func (g *SudokuGrid) GetCell(r, c int) *SudokuCell {
 	return g.contents[9*r+c]
+}
+
+// SetCellWithUndo sets the value of cell at row r and column c with the
+// value digit. It doesn't store the previous value of the cell in it's
+// undo history.
+func (g *SudokuGrid) SetCellWithoutUndo(r, c, digit int) *SudokuGrid {
+	g.GetCell(r, c).SetValue(digit)
+	return g
+}
+
+// SetCellWithUndo sets the value of cell at row r and column c with the
+// value digit. It also stores the previous value of the cell in it's
+// undo history.
+func (g *SudokuGrid) SetCellWithUndo(r, c, digit int) *SudokuGrid {
+	cell := g.GetCell(r, c)
+	if digit == cell.Value() {
+		return g
+	}
+	g.undoHistory = append(g.undoHistory, undoItem{
+		byte(r), byte(c), byte(cell.Value()),
+	})
+	cell.SetValue(digit)
+	return g
+}
+
+// Undo undos the last move.
+func (g *SudokuGrid) Undo() *SudokuGrid {
+	if len(g.undoHistory) > 0 {
+		item := g.undoHistory[len(g.undoHistory)-1]
+		g.undoHistory = g.undoHistory[:len(g.undoHistory)-1]
+		g.SetCellWithoutUndo(
+			int(item.row),
+			int(item.col),
+			int(item.digit),
+		)
+	}
+	return g
+}
+
+// FlushUndoHistoryToFile writes the entire undo history to file and
+// resets the history.
+// NOTE: empty cell is denoted by '.'.
+func (g *SudokuGrid) FlushUndoHistoryToFile(file *os.File) *SudokuGrid {
+	for _, item := range g.undoHistory {
+		a := item.row + '0'
+		b := item.col + '0'
+		c := byte('.')
+		if d := item.digit; d != 0 {
+			c = d + '0'
+		}
+		file.Write([]byte{a, ' ', b, ' ', c, '\n'})
+	}
+	g.undoHistory = nil
+	return g
+}
+
+// ReadUndoHistoryFromFile reads file and appends it's undo history to
+// g.
+func (g *SudokuGrid) ReadUndoHistoryFromFile(file *os.File) *SudokuGrid {
+	for s := bufio.NewScanner(file); s.Scan(); {
+		line := s.Bytes()
+		if len(line) != 5 {
+			log.Fatalf("ReadUndoHistoryFromFile: parsing undo \"%s\": line length must be 5\n", line)
+		}
+		a, b, c := line[0], line[2], line[4]
+		if a < '0' || a > '9' {
+			log.Fatalf("ReadUndoHistoryFromFile: parsing undo: first character is %c, must be in the set [1-9]", a)
+		}
+		a -= '0'
+		if b < '0' || b > '9' {
+			log.Fatalf("ReadUndoHistoryFromFile: parsing undo: second character is %c, must be in the set [1-9]", b)
+		}
+		b -= '0'
+		if c == '.' {
+			c = 0
+		} else if c >= '0' && c <= '9' {
+			c = c - '0'
+		} else {
+			log.Fatalf("ReadUndoHistoryFromFile: parsing undo: third character is %c, must be in the set [.1-9]", b)
+		}
+		g.undoHistory = append(g.undoHistory, undoItem{a, b, c})
+	}
+	return g
 }
 
 // InputHandler returns the handler for this primitive.
@@ -120,7 +229,7 @@ func (g *SudokuGrid) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				cell := g.GetCell(g.selectedRow, g.selectedColumn)
 				if !cell.Readonly() {
-					cell.SetValue(int((r - '0')))
+					g.SetCellWithUndo(g.selectedRow, g.selectedColumn, int(r-'0'))
 				}
 			}
 		case tcell.KeyDown:
@@ -141,7 +250,7 @@ const (
 	// cell length = len(cell contents + border character)
 
 	// cell vertical length = len('<number>' + '-') = 2
-	SudokuGridRowHeight   = 2
+	SudokuGridRowHeight = 2
 	// cell horizontal length = len(' ' + '<number>' ' ' + '|') = 4
 	SudokuGridColumnWidth = 4
 )
@@ -160,13 +269,14 @@ func (g *SudokuGrid) Draw(screen tcell.Screen) {
 		crossBorder = tview.BoxDrawingsHeavyVerticalAndHorizontal
 	)
 
+	g.Box.SetBackgroundColor(ColorSchemes[Theme]["background"])
 	g.Box.DrawForSubclass(screen, g)
 	X, Y := g.centerCoordinates()
 
-	heavyBorderStyle := tcell.StyleDefault.Foreground(Accent).Background(Theme.background)
-	lightBorderStyle := tcell.StyleDefault.Foreground(Theme.uiSurface).Background(Theme.background)
-	cellStyle := tcell.StyleDefault.Foreground(Theme.foreground).Background(Theme.background)
-	readonlyStyle := tcell.StyleDefault.Foreground(Theme.foreground).Background(Accent)
+	heavyBorderStyle := tcell.StyleDefault.Foreground(ColorSchemes[Theme][Accent]).Background(ColorSchemes[Theme]["background"])
+	lightBorderStyle := tcell.StyleDefault.Foreground(ColorSchemes[Theme]["uiSurface"]).Background(ColorSchemes[Theme]["background"])
+	cellStyle := tcell.StyleDefault.Foreground(ColorSchemes[Theme]["foreground"]).Background(ColorSchemes[Theme]["background"])
+	readonlyStyle := tcell.StyleDefault.Foreground(ColorSchemes[Theme]["foreground"]).Background(ColorSchemes[Theme][Accent])
 
 	// helper function to draw i-th cell at row y and column x.
 	drawCell := func(c *SudokuCell, style func(tcell.Style) tcell.Style, x, y int) {

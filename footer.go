@@ -38,8 +38,8 @@ func NewSudokuFooter(frame *SudokuFrame) *SudokuFooter {
 			// automatically and instaneously, and I've no idea how.
 			// It updates before the timer updates, so timer's
 			// SetChangedFunc() handler can't be the reason.
-			if cell := g.GetCell(g.SelectedCell()); !cell.Readonly() {
-				cell.SetValue(int(char - '0'))
+			if r, c := g.SelectedCell(); !g.GetCell(r, c).Readonly() {
+				g.SetCellWithUndo(r, c, int(char - '0'))
 			}
 		})
 		return b
@@ -55,6 +55,7 @@ func NewSudokuFooter(frame *SudokuFrame) *SudokuFooter {
 
 // Draw draws f horizontally centered with one cell width gap at the top.
 func (f *SudokuFooter) Draw(screen tcell.Screen) {
+	f.SetBackgroundColor(ColorSchemes[Theme]["background"])
 	f.DrawForSubclass(screen, f)
 
 	// assumption: no borders around numbers.
@@ -73,6 +74,10 @@ func (f *SudokuFooter) Draw(screen tcell.Screen) {
 	x = X + (sudokuWidth-width)/2
 
 	for i, button := range f.buttons {
+		button.SetBackgroundColor(ColorSchemes[Theme]["uiSurface"])
+		button.SetBackgroundColorActivated(ColorSchemes[Theme]["foreground"])
+		button.SetLabelColor(ColorSchemes[Theme]["foreground"])
+		button.SetLabelColorActivated(ColorSchemes[Theme][Accent])
 		if i == 5 {
 			y += cellHeight
 		}
