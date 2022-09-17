@@ -248,6 +248,24 @@ c  Change Accent
 			}
 		case tcell.KeyRune:
 			switch event.Rune() {
+			case 'u':
+				frame.grid.Undo()
+				return nil
+			case 'v':
+				pages.ShowPage("validate")
+				return nil
+			case 's':
+				pages.ShowPage("solve")
+				return nil
+			case 'c':
+				pages.ShowPage("accent")
+				return nil
+			case 't':
+				switchAppTheme()
+				return nil
+			case 'r':
+				pages.ShowPage("reset")
+				return nil
 			case '?':
 				pages.ShowPage("help")
 				return nil
