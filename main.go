@@ -106,6 +106,18 @@ func main() {
 		"Cyan", "Purple", "Pink", "Red", "Orange", "Yellow", "Green",
 	})
 
+	helpModal := NewModal()
+	InitModalStyle(helpModal)
+	helpModal.SetText(`Shortcut keys
+u  Undo
+v  Validate
+s  Solve
+t  Switch Theme
+c  Change Accent
+?/h  Help window
+`)
+	helpModal.AddButtons([]string{"Ok"})
+
 	switchAppTheme := func(t, accent string) {
 		go func() {
 			SetTheme(t, accent)
@@ -114,6 +126,7 @@ func main() {
 			InitModalStyle(resetModal)
 			InitModalStyle(validateModal)
 			InitModalStyle(accentModal)
+			InitModalStyle(helpModal)
 			app.Draw()
 		}()
 	}
@@ -180,6 +193,11 @@ func main() {
 		}
 		pages.SwitchToPage("grid")
 		resetModal.SetFocus(0)
+	})
+	helpModal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+		if buttonLabel == "Ok" {
+			pages.SwitchToPage("grid")
+		}
 	})
 
 	focusRing := ring.New(sidepane.GetItemCount() + 1)
