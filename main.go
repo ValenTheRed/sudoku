@@ -151,6 +151,7 @@ c  Change Accent
 	pages.AddPage("solve", solveModal, true, false)
 	pages.AddPage("validate", validateModal, true, false)
 	pages.AddPage("accent", accentModal, true, false)
+	pages.AddPage("help", helpModal, true, false)
 	sidepane.GetButton(0).SetSelectedFunc(func() {
 		frame.grid.Undo()
 	})
