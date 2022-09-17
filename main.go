@@ -131,14 +131,15 @@ c  Change Accent
 		}()
 	}
 
-	// Theme changer
-	sidepane.GetButton(4).SetSelectedFunc(func() {
+	switchAppTheme := func() {
 		t := "dark"
 		if Theme == "dark" {
 			t = "light"
 		}
 		setAppThemeAccent(t, Accent)
-	})
+	}
+	// Theme changer
+	sidepane.GetButton(4).SetSelectedFunc(switchAppTheme)
 
 	grid := tview.NewGrid()
 	grid.SetRows(0).SetColumns(-1, -3).
