@@ -118,7 +118,7 @@ c  Change Accent
 `)
 	helpModal.AddButtons([]string{"Ok"})
 
-	switchAppTheme := func(t, accent string) {
+	setAppThemeAccent := func(t, accent string) {
 		go func() {
 			SetTheme(t, accent)
 			InitSidepaneStyle(sidepane)
@@ -137,7 +137,7 @@ c  Change Accent
 		if Theme == "dark" {
 			t = "light"
 		}
-		switchAppTheme(t, Accent)
+		setAppThemeAccent(t, Accent)
 	})
 
 	grid := tview.NewGrid()
@@ -161,7 +161,7 @@ c  Change Accent
 	accentModal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 		switch buttonLabel {
 		case "Cyan", "Purple", "Pink", "Red", "Orange", "Yellow", "Green":
-			switchAppTheme(Theme, strings.ToLower(buttonLabel))
+			setAppThemeAccent(Theme, strings.ToLower(buttonLabel))
 		}
 		pages.SwitchToPage("grid")
 	})
