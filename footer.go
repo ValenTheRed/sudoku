@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -106,9 +107,25 @@ func (f *SudokuFooter) MouseHandler() func(tview.MouseAction, *tcell.EventMouse,
 		for _, button := range f.buttons {
 			consumed, capture = button.MouseHandler()(action, event, setFocus)
 			if consumed {
-				return consumed, capture
+				break
 			}
 		}
+		// If I didn't have a timer, the button wouldn't flash with
+		// their selected colour, giving the user no indication whether
+		// they had clicked the button or not. So, this is a hacky to
+		// ensure that the buttons flash, and the user gets a button
+		// press feedback. Though, occassionally, the button would be on
+		// focus for a moment too long and it is noticeable. I don't
+		// know why.
+		// TODO: is there a better way?
+		go func() {
+			<-time.After(50 * time.Millisecond)
+			switch action {
+			case tview.MouseLeftDown, tview.MouseLeftClick:
+				setFocus(f.frame)
+				consumed = true
+			}
+		}()
 		return
 	})
 }
