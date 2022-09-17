@@ -1,12 +1,14 @@
 package main
 
 import (
+	"container/ring"
 	"flag"
 	"log"
 	"os"
 	"path"
 	"strings"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -178,6 +180,54 @@ func main() {
 		}
 		pages.SwitchToPage("grid")
 		resetModal.SetFocus(0)
+	})
+
+	focusRing := ring.New(sidepane.GetItemCount() + 1)
+	focusRing.Value = frame
+	focusRing = focusRing.Next()
+	for i := 0; i < sidepane.GetItemCount(); i++ {
+		focusRing.Value = sidepane.GetButton(i)
+		focusRing = focusRing.Next()
+	}
+	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyTAB:
+			// Figure out where the focus is currently. Needed because,
+			// say, at the start of the application, the `Switch Theme`
+			// button is selected, this breaks tabbing since focusRing
+			// is currently resting on frame, tabbing would change focus
+			// to `Undo` when anyone would expect it to change to
+			// `Change Accent`.
+			//
+			// FIXME: So this doesn't really work well. If, say I
+			// selected `Switch Theme` followed by the sudoku grid, then
+			// a TAB, the focus switches to `Change Accent`, the button
+			// after `Switch Theme` when you expect it to be `Undo`.
+			// Very bizarre.
+			// Although it's a feature not a bug. I no longer have to
+			// remember where the focus was last in the sidepane.
+			// Anecdodally, most softwares save the last position on the
+			// sidepane if you switch to the main area, and restore that
+			// when focus goes to the sidepane.
+			item := app.GetFocus()
+			for i := 0; i < focusRing.Len(); i++ {
+				if focusRing.Value.(tview.Primitive) == item {
+					break
+				}
+				focusRing = focusRing.Next()
+			}
+			switch event.Modifiers() {
+			case tcell.ModShift: // move focus backward
+				focusRing = focusRing.Prev()
+				app.SetFocus(focusRing.Value.(tview.Primitive))
+				return nil
+			default: // move focus forward
+				focusRing = focusRing.Next()
+				app.SetFocus(focusRing.Value.(tview.Primitive))
+				return nil
+			}
+		}
+		return event
 	})
 
 	frame.timer.Start()
