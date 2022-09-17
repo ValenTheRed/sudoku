@@ -245,6 +245,12 @@ c  Change Accent
 				app.SetFocus(focusRing.Value.(tview.Primitive))
 				return nil
 			}
+		case tcell.KeyRune:
+			switch event.Rune() {
+			case '?':
+				pages.ShowPage("help")
+				return nil
+			}
 		}
 		return event
 	})
